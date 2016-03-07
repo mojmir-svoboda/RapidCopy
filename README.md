@@ -3,6 +3,7 @@
 ##### 概要
 
 Windows系最速(?) のファイルコピー＆削除ツールFastCopy v2.11のLinux移植版です。
+
 RapidCopy is portable version of FastCopy that runs GNU/Linux.
 
 Linux版はMac移植版である[RapidCopy]v1.1.1をベースとしています。
