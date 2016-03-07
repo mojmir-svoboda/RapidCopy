@@ -1,0 +1,54 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>icon/RapidCopy0.png</file>
+        <file>icon/RapidCopy1.png</file>
+        <file>icon/RapidCopy2.png</file>
+        <file>icon/RapidCopy3.png</file>
+        <file>icon/RapidCopy4.png</file>
+        <file>icon/checkmark.png</file>
+        <file>icon/delete_sign_filled.png</file>
+        <file>icon/past.png</file>
+    </qresource>
+    <qresource prefix="/qm">
+        <file>RapidCopy_ja_JP.qm</file>
+    </qresource>
+    <qresource prefix="/help">
+        <file>help/index.html</file>
+        <file>help/index_en.html</file>
+        <file>help/RapidCopyEmailSettingExample.png</file>
+    </qresource>
+    <qresource prefix="/sound">
+        <file>sound/RapidCopy_SE_01.wav</file>
+        <file>sound/RapidCopy_SE_02.wav</file>
+        <file>sound/RapidCopy_SE_03.wav</file>
+        <file>sound/RapidCopy_SE_04.wav</file>
+        <file>sound/RapidCopy_SE_05.wav</file>
+        <file>sound/RapidCopy_SE_06.wav</file>
+        <file>sound/RapidCopy_SE_07.wav</file>
+        <file>sound/RapidCopy_SE_08.wav</file>
+        <file>sound/RapidCopy_SE_09.wav</file>
+        <file>sound/RapidCopy_SE_10.wav</file>
+        <file>sound/RapidCopy_SE_11.wav</file>
+        <file>sound/RapidCopy_SE_12.wav</file>
+        <file>sound/RapidCopy_SE_13.wav</file>
+        <file>sound/RapidCopy_SE_14.wav</file>
+        <file>sound/RapidCopy_SE_15.wav</file>
+        <file>sound/RapidCopy_SE_16.wav</file>
+        <file>sound/RapidCopy_SE_17.wav</file>
+        <file>sound/RapidCopy_SE_18.wav</file>
+        <file>sound/RapidCopy_SE_19.wav</file>
+        <file>sound/RapidCopy_SE_20.wav</file>
+        <file>sound/RapidCopy_SE_21.wav</file>
+        <file>sound/RapidCopy_SE_22.wav</file>
+        <file>sound/RapidCopy_SE_23.wav</file>
+        <file>sound/RapidCopy_SE_24.wav</file>
+        <file>sound/RapidCopy_SE_25.wav</file>
+        <file>sound/RapidCopy_SE_26.wav</file>
+        <file>sound/RapidCopy_SE_27.wav</file>
+        <file>sound/RapidCopy_SE_28.wav</file>
+    </qresource>
+    <qresource prefix="/license">
+        <file>license/License_EN.txt</file>
+        <file>license/License_JP.txt</file>
+    </qresource>
+</RCC>
