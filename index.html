@@ -1,0 +1,901 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="/css/default.css" type="text/css"/>
+
+<meta name="ROBOTS" content="NOCACHE">
+
+<style type="text/css">
+<!--
+.attention {
+	color:red;
+}
+.help_head1 {
+	color:black;
+	background-color:#88bbff;
+}
+.help_head2 {
+	color:black;
+	text-align:center;
+	background-color:#88bbff;
+	margin-bottom:10px;
+}
+.help_head3 {
+	color:black;
+	background-color:#88bbff;
+	margin-bottom:5px;
+}
+.help_head4 {
+	color:black;
+	background-color:#88bbff;
+	margin-bottom:0px;
+}
+.help_table {
+	border-style:solid;
+	border-collapse: separate;
+	background-color: #ddffdd;
+	border-color: #aaaaaa;
+	font-size: 95%;
+}
+.tr_default {
+	background-color: #aaffaa;
+}
+.help_all {
+	font-size: 95%;
+}
+.help_section {
+	margin-left:25px;
+	margin-bottom:30px;
+}
+.help_sub_section {
+	margin-left:10px;
+	margin-bottom:10px;
+}
+.help_mini_section {
+	background-color: #cccccc;
+	padding:2%;
+}
+.help_mini_section2 {
+	margin-top:3px;
+	background-color: #eeffff;
+	padding:2%;
+}
+.help_license {
+	border-color:#777777;
+	border-style:solid;
+	padding:2%;
+	background-color: #dddddd;
+}
+.help_license_cond {
+	padding:5%;
+}
+-->
+</style>
+
+<TITLE>RapidCopy(FastCopy for Linux)</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#eeffff">
+
+<div align="right">
+<a href="http://ipmsg.org/tools/fastcopy.html">Windows用フリーソフトFastCopyのページ</a><br>
+<a href="./index_en.html">RapidCopy English Page</a><br>
+</div>
+
+
+<div style="position:absolute; top:10px; left:10px;">
+<table border="1"><tr><td>
+オリジナル版FastCopy/ipmsg.org を<br>応援したい方はこちら
+</td></tr></table>
+<center>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="4915055">
+<input type="image" src="https://www.paypal.com/ja_JP/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="">
+<img alt="" border="0" src="https://www.paypal.com/ja_JP/i/scr/pixel.gif" width="1" height="1">
+</form>
+</center>
+</div>
+
+<center>
+<H1><a href="./index.html">RapidCopy</a></H1>
+
+Windows系最速(?)のファイルコピー＆削除ツールのGNU/Linux移植プロジェクト<br>
+<br>
+
+</td></tr><table>
+<center>
+2016/03/02 作成<br>
+<HR>
+</center>
+
+<table><tr><td valign="top">
+<DIV align="left">
+
+<a name="about_about"/>
+
+<h2 class="help_head2">0. はじめに</h2>
+<div class="help_section">
+	<b>
+	FastCopy for Linux. 通称RapidCopyのマニュアルページです。以下の点に注意して読んでください。<br><br>
+	 <li>移植元となったFastCopyV2.11のマニュアルをベースに作成されています。</li>
+	</b>
+</div>
+
+<a name="about"/>
+<h2 class="help_head2">1. 概要</h2>
+<div class="help_section">
+	<strong>Windows系最速(?)</strong> のファイルコピー＆削除ツールのLinux移植版です。
+	<br><br>
+	Mac移植版であるRapidCopyPro v1.1.0をベースとしています。<br>
+	<a name="disk_mode"/>
+	自動的に、コピー元とコピー先が、同一の物理HDD or 別HDD かを判定した後、以下の動作を行います。
+	<table class="help_table" border="4">
+		<tr><td nowrap><strong>別HDD間</strong></td><td>マルチスレッドで、読み込みと書き込みを並列に行う</td></tr>
+		<tr><td nowrap><strong>同一HDD間</strong></td><td>コピー元から（バッファが一杯になるまで）連続
+		読み込み後、コピー先に連続して書き込む</td></tr>
+	</table>
+	<br>
+	Read/Write も、OS のキャッシュを使わないように努力しているため、他のプロセス	（アプリケーション）が重くなりにくくなっています。<br>
+	Include/Exclude フィルタ（UNIXワイルドカード形式）が指定可能です。
+	<br><br>
+	Win32APIの置き換えに可能な限りシステムコールを使用している他、GUIに<a href="http://www.qt.io/Qt">Qtフレームワーク</a>を使用しています。<br>
+	CPU負荷を低減するxxHashベリファイやコピー結果のE-Mail送信機能等、オリジナル版に幾つかの機能を追加しています。<br>
+	<br>
+
+	<br>
+	Fastcopyから追加、改善した機能の一覧については<a href="#diff">FastCopy v2.11からの仕様変更・追加機能一覧</a>を参照してください。<br>
+	<br>
+	ソースコードはBSDライセンスで公開しています。<br>
+</div>
+
+<a name="license"/>
+<h2 class="help_head2">2. ライセンス＆免責</h2>
+
+<div class="help_section">
+	<div class="help_license">
+	<strong>Copyright 2004-2012, SHIROUZU Hiroaki All rights reserved.</strong><br>
+	<strong>Copyright 2014-2016, Kengo Sawatsu All rights reserved.</strong><br>
+	<br>
+	<div class="help_license">
+	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:<br>
+	<br>
+	1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.<br>
+	<br>
+	2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+	<br><br>
+	<strong>THIS SOFTWARE IS PROVIDED BY SHIROUZU Hiroaki and Kengo Sawatsu ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SHIROUZU Hiroaki OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</strong>
+	</div>
+	</div>
+	<br>
+
+	<br>
+	<div onclick="obj=document.getElementById('xxhash').style; obj.display=(obj.display=='none')?'block':'none';">
+	<a style="cursor:pointer;"><b><u>xxHashライブラリライセンス表示</u></b></a>
+	</div>
+	<div class="help_license" id="xxhash" style="display:none;clear:both;">
+	xxHash Library<br>
+	Copyright (c) 2012-2014, Yann Collet<br>
+	All rights reserved.<br>
+	<br>
+	Redistribution and use in source and binary forms, with or without modification,<br>
+	are permitted provided that the following conditions are met:<br>
+	<br>
+	* Redistributions of source code must retain the above copyright notice, this<br>
+	list of conditions and the following disclaimer.<br>
+	<br>
+	* Redistributions in binary form must reproduce the above copyright notice, this<br>
+	  list of conditions and the following disclaimer in the documentation and/or<br>
+	  other materials provided with the distribution.<br>
+	<br>
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND<br>
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<br>
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<br>
+	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR<br>
+	ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<br>
+	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<br>
+	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON<br>
+	ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<br>
+	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<br>
+	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<br>
+	</div>
+	<br>
+	<div onclick="obj=document.getElementById('SimpleSmtp_SSL_QT5').style; obj.display=(obj.display=='none')?'block':'none';">
+	<a style="cursor:pointer;"><b><u>SimpleSmtp_SSL_QT5ライブラリライセンス表示</u></b></a>
+	</div>
+	<div class="help_license" id="SimpleSmtp_SSL_QT5" style="display:none;clear:both;">
+	Copyright (c) 2013 Raivis Strogonovs<br>
+	Simple Smtp for Qt5 source repository : <a href="https://github.com/xcoder123/SimpleSmtp_SSL_QT5" target=”_blank”>https://github.com/xcoder123/SimpleSmtp_SSL_QT5</a> <br>
+	<br>
+	<a href="http://morf.lv" target=”_blank”>http://morf.lv</a><br>
+	<br>
+	Permission is hereby granted, free of charge,<br>
+	to any person obtaining a copy of this software and associated documentation files (the "Software"),<br>
+	to deal in the Software without restriction, including without limitation the rights to use,<br>
+	copy, modify, merge, publish, distribute, sublicense,and/or sell copies of the Software,<br>
+	and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br>
+	<br>
+	The above copyright notice and this permission notice shall be included in all copies<br>
+	or substantial portions of the Software.<br>
+	<br>
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,<br>
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.<br>
+	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,<br>
+	DAMAGES OR OTHER LIABILITY,WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,<br>
+	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<br>
+	</div>
+	<br>
+	<div onclick="obj=document.getElementById('QBlowfish').style; obj.display=(obj.display=='none')?'block':'none';">
+	<a style="cursor:pointer;"><b><u>QBlowfishライブラリライセンス表示</u></b></a>
+	</div>
+	<br>
+	<div class="help_license" id="QBlowfish" style="display:none;clear:both;">
+	QBlowfish is licensed under the MIT License<br>
+	<br>
+	Copyright © 2012 Roopesh Chander <roop@forwardbias.in><br>
+	<br>
+	Permission is hereby granted, free of charge, to any person obtaining<br>
+	a copy of this software and associated documentation files (the<br>
+	"Software"), to deal in the Software without restriction, including<br>
+	without limitation the rights to use, copy, modify, merge, publish,<br>
+	distribute, sublicense, and/or sell copies of the Software, and to<br>
+	permit persons to whom the Software is furnished to do so, subject<br>
+	to the following conditions:<br>//時刻違いをエラーにしてた時代があるが、よく考えたら時刻違いですぐエラーにするのは
+	//色々まずいのでやめとく。
+	<br>
+	The above copyright notice and this permission notice shall be<br>
+	included in all copies or substantial portions of the Software.<br>
+	<br>
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,<br>
+	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF<br>
+	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND<br>
+	NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS<br>
+	BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN<br>
+	ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN<br>
+	CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE<br>
+	SOFTWARE.<br>
+	</div>
+
+</div>
+
+
+<a name="environment"/>
+<h2 class="help_head2">3. 動作環境</h2>
+<div class="help_section">
+	CentOS 7(x64)でコンパイル、動作確認を行っています。<br>
+	コンパイルには以下のライブラリ、フレームワークのインストールが必要です。<br><br>
+	<li>Qt 5.4.2 以降
+	<li>libacl-devel(ACL処理のため)
+	<li>libbsd-devel
+</div>
+
+<a name="install"/>
+<h2 class="help_head2">4. インストール・アンインストール</h2>
+<div class="help_section">
+	頑張ってコンパイルしてください:)
+</div>
+
+<a name="usage"/>
+<h2 class="help_head2">5. 使用方法＆画面説明</h2>
+<div class="help_section">
+	画面説明は、以下の通りです。
+	<h3 class="help_head3">コピー元 / コピー先</h3>
+	<div class="help_sub_section">
+		コピー元 / コピー先(フォルダのみ)をD&Dまたはファイルダイアログで指定します。<br>
+		<br>
+		コピー元へのドラッグ＆ドロップ時にCtrlキーを押したままドロップ操作をすると、<br>現在のコピー元パスにドラッグしてきたパスを追加します。（押していない場合は、現在のコピー元はクリアされます）<br>
+		コピー先へのフォルダドロップも可能です。<br>
+		<font color="red">なお、srcまたはdstにシンボリックリンクを直接指定することはできません。<br>
+		(シンボリックリンクの扱いについては<a href=//時刻違いをエラーにしてた時代があるが、よく考えたら時刻違いですぐエラーにするのは
+		//色々まずいのでやめとく。"#reparse">シンボリックリンク</a>を参照してください。</font><br>
+
+		<a name="backslash_behavior"/>
+		<h4 class="help_head4">コピー先指定の末尾に'/'があるかどうかによる挙動の違い</h4>
+		<div class="help_mini_section">
+			<strong>コピー元指定が1フォルダのみで、コピー先指定の末尾に'/'がない場合</strong><br>
+			<div class="help_mini_section2">
+			コピー元フォルダ自体をコピーせず、コピー元フォルダ配下の内容をコピー先フォルダ直下にコピーします。<br>
+			（コピー先フォルダ<b>/</b>コピー元フォルダの中身）
+			</div>
+			<br>
+			<strong>それ以外の場合</strong><br>
+			<div class="help_mini_section2">
+			コピー元フォルダ自体を作成後、作成したフォルダ直下にコピー元フォルダの中身をコピーします。<br>
+			（コピー先フォルダ<b>/</b>コピー元フォルダ<b>/</b>コピー元フォルダの中身）
+			</div>
+		</div>
+		<br>
+	</div>
+	<h3 class="help_head3">動作モード</h3>
+	<div class="help_sub_section">
+		<table class="help_table" border="4">
+		<tr><th>モード</th><th>動作内容</th>
+		<tr><td nowrap><strong>差分（上書きなし）</strong></td>
+		  <td>同じファイル名がある場合、コピーしません。</td></tr>
+		<tr class="tr_default"><td nowrap><strong>差分（サイズ・日付）</strong></td>
+		  <td>同じファイル名がある場合、サイズもしくは日付が違う場合のみ、コピーします。（デフォルト）</td></tr>
+		<tr><td nowrap><strong>差分（サイズ）</strong></td>
+		  <td>同じファイル名がある場合、サイズが異なる場合のみ、コピーします。<br>
+				  LTFSモード時のみ選択できます。</td></tr>
+		<tr><td nowrap><strong>差分（最新日付）</strong></td>
+		  <td>同じファイル名がある場合、日付が新しい場合のみ、コピーします。</td></tr>
+		<tr><td nowrap><strong>コピー（全上書き）</strong></td>
+		  <td>常に上書きコピーします。</td></tr>
+		<tr><td nowrap><strong>同期（サイズ・日付）</strong></td>
+		  <td>同じファイル名がある場合、サイズもしくは日付が違う場合のみ、コピーします。
+		  さらにコピー元に存在しない、コピー先ファイル（＆ディレクトリ）をすべて強制削除します。</td></tr>
+		<tr><td nowrap><strong>ベリファイ（サイズ）</strong></td>
+		  <td>コピーを実行せず、ベリファイのみ実行します。<br>
+		  ベリファイ（サイズ）では以下の差異をエラーとして処理します。<br>
+		  <li>ファイルサイズが異なる</li>
+		  <li>コピー元に存在するがコピー先には存在しないファイルまたはディレクトリ</li>
+		  <li>ファイルのベリファイ結果が不正</li>
+		  表示結果については<a href="#Log">ログ機能</a>を参照してください。<br>
+		  なお、シンボリックリンクに対するベリファイは設定に関係なく「シンボリックリンクが指すファイル実体」について比較します。<br>
+		  </td></tr>
+		<tr><td nowrap><strong>移動（全上書き）</strong></td>
+		  <td>上書きコピーした上で、コピー元を全削除します。（一般設定にて、移動（サイズ・日付）に変更することができます）<br>
+		  </td></tr>
+		<tr><td nowrap><strong>全削除</strong></td>
+		  <td>指定されたファイル（＆フォルダ）を全て削除します。<br>	</td></tr>
+		</table>
+	</div>
+
+	<h3 class="help_head3">ボタン＆オプション指定</h3>
+	<div class="help_sub_section">
+		<table class="help_table" border="4">
+		<tr><td nowrap><strong>実行</strong></td>
+		<td>コピー動作を実行します。実行中は、中断...ボタンに変化します。<br><strong></td></tr>
+		<tr><td nowrap>リストアップ</td>
+		<td>コピー＆削除される（予定の）ファイルを、リストアップして表示します。表示結果については<a href="#Log">ログ機能</a>を参考にしてください。<br>なお、Ctrlキーを押しながらリストアップを押す（ボタン名「リストアップ」→「リストアップ+V」）と、スキップ対象（ただしフィルタ除外は除く）のファイルペアについて、読み込み＆ハッシュ値比較を行います）(*2)</td></tr>
+		<tr><td nowrap><strong>Buffer指定</strong></td>
+		<td>Read/Write に使う、バッファサイズを MB 単位で指定します。</td></tr>
+		<tr><td nowrap><strong>速度コントロール</strong></td>
+		<td>最大(Full Speed)、自動速度制限(Auto Slow)(*1)、速度指定(level9～level1)、停止(Suspend) を指定することができます。重いと感じる場合は「自動速度制限」を試すと良いでしょう（マウスや最前面ウィンドウの変化を検知すると、一定時間、遅くします）。また「最大」以外の場合は、プロセス優先度クラスを「アイドル」に落とします。（<a href="#job">ジョブ管理</a>での保存項目対象にはなりません）</td></tr>
+		<tr><td nowrap><strong>エラー時継続</strong></td>
+		<td>Read/Write/Delete等で、エラーが発生しても、中断せず、可能な限り動作を続けます。<br>
+		（ただし、エラー表示欄やエラーログには残ります）</td></tr>
+		<tr><td nowrap><strong>ベリファイ</strong></td>
+		<td>ハッシュ生成と突き合わせによる書き込みデータのベリファイを行います。<br>
+		デフォルトではMD5でベリファイします。設定->一般設定->I/O設定で任意のハッシュアルゴリズムを選択可能です。<br>
+		 なお、具体的には、次のような比較を行います。<br>
+		 Read(コピー元) -> MD5(コピー元) -> Write(コピー先) -> Read(コピー先) -> MD5(コピー先) -> MD5比較(コピー元/コピー先) <br>
+		 （各ステージが、複数のファイルを跨ったパイプラインのように並列して処理されます）
+		 </td></tr>
+		<tr><td nowrap><strong>完了時間予測</strong></td>
+		<td>コピー開始前に、コピー元の総ファイル数・総ファイルサイズを調べることで、完了時間を予測します。
+（なお、削除モードでの予測はできません。また、移動モードの場合、削除時間は予測に含んでいません）</td></tr>
+		<tr><td nowrap><strong>Top</strong></td>
+		<td>常に最前面に表示します。</td></tr>
+		<tr><td nowrap><strong>直ちに開始</strong></td>
+		<td>他のRapidCopyが実行中の場合に、その完了を待つことなく、直ちに実行を開始します。<br>（なお、他のRapidCopyがコピー・移動中でない場合、このボタンは現れません）</strong></td></tr>
+		<tr><td nowrap><strong>「?」</strong></td>
+		<td>ヘルプを表示します。</td></tr>
+		</table>
+		（*1)RapidCopyがアクティブでない状態でマウス移動を検出すると速度制限します。具体的には、I/O 動作の合間にウェイトを入れる、プロセス優先度を下げる、最大I/Oサイズを1MBに低下させる、等により動作速度を制限します。なお、動作内容は、将来、変更される可能性があります</s><br>
+		(*2)リストアップ+VモードはWindows版FastCopyユーザ向けの後方互換機能です。RapidCopyではベリファイモードの利用を推奨します。<br>
+		<br>
+		<a name="options"/>
+		<table class="help_table" border="4">
+		<tr><td><strong>ACL</strong></td>
+		<td>アクセスコントロールリスト(ACL)をコピーします。</td></tr>
+		<tr><td><strong>EA</strong></td>
+		<td>extended attribute(EA)をコピーします。<br>
+		LinuxではACL情報はEAとして保存されるため、対象ファイルにACLが含まれる場合はACLもコピーします。</td></tr>
+		<tr><td nowrap><strong><b>LTFS</b></strong></td>
+		<td>LTFSでマウントしたフォルダにアクセスする場合に指定します。<br>
+			LTFSモードではEA,ACL属性,速度コントロールは強制無効となります。<br>
+			LTFSモードではLTFS側の仕様により、差分判定に日付を利用するコピーモードは選択できません。<br>
+			LTFSモードではLTFS禁則文字を検知した場合は自動的に'_'にファイル名を置換してコピーします。<br>
+			その他、LTFSのサポート情報については<a href="https://groups.google.com/forum/?hl=ja#!forum/rapidcopy_jp">RapidCopyサポート掲示板</a>を参考にしてください。<br></td></tr>
+		<tr><td><strong>復元無効化（上書き後に削除）</strong></td>
+		<td>削除する前に、対象ファイルをリネームした後、ランダムデータで上書きすることで、削除ファイルの復元を実質的に無効化します。なお、EAの上書きは行いません。設定で「NSA 方式」を選択していた場合は、２回ランダムなデータで上書きした後、最後に 0 で上書きします。（復元不可能かどうかの保証はできません）<br>
+		<br>
+		</td></tr>
+		</table>
+		<br>
+	</div>
+
+	<a name="reparse"/>
+	<h3 class="help_head3"><b>シンボリックリンク(ln -s)</b></h3>
+	<div class="help_sub_section">
+		<table class="help_table" border="4">
+		<tr><th>モード</th><th>動作内容</th>
+		<tr><td nowrap><strong>差分・コピー</strong></td>
+		  <td>デフォルトではシンボリックリンク自体をコピーします。<br>
+		  <br>
+		  <tr><td nowrap><strong>移動</strong></td>
+		  <td>常に、エイリアス・シンボリックリンク自体を移動します。</td></tr>
+		<tr><td nowrap><strong>削除</strong></td>
+		  <td>常に、エイリアス・シンボリックリンク自体を削除します。</td></tr>
+		</table>
+		(*1):後述の<a href="#recreate">/recreate</a>オプション相当の動作が常に有効となります。<br>
+	</div>
+
+	<a name="hardlink"/>
+	<h3 class="help_head3">ハードリンク</h3>
+	<div class="help_sub_section">
+		設定ファイルにlinkdest=1を設定することでハードリンクを再現する事が可能です。<br>
+		（実行時の TotalFiles: 表示が、"ファイル数（ディレクトリ数）" から "ファイル数/ハードリンク数（ディレクトリ数）" に変化します）<br>
+		ハードリンク実体1万ファイルあたり、最大で10MB程度メモリを消費するので注意してください。（パス長に依存）。<br>
+		<br>
+		なお、linkdest=1を設定した場合、<a href="#recreate">--recreate</a> オプション相当の動作が常に有効になります。<br>
+	</div>
+	<a name="file_newwindow"/>
+	<h3 class="help_head3">ファイル →新しいウインドウを開く</h3>
+	<div class="help_sub_section">
+		別のRapidCopyプロセスを起動します。<br>
+		内部処理の都合により、コピー動作中は実行できません<br>
+	</div>
+	<a name="file_report"/>
+	<h3 class="help_head3">ファイル →バグ報告用レポートを生成</h3>
+	<div class="help_sub_section">
+		作者へのバグ報告用レポートを生成します。<br>
+		ファイル生成先は$HOME/Desktop/YYYYMMDD-HHMMSS.zipです。<br>
+	</div>
+	<a name="job"/>
+	<h3 class="help_head3">ジョブ管理 → シングルジョブ管理</h3>
+	<div class="help_sub_section">
+		メインウィンドウの記述内容を、ジョブという単位で、保存＆呼び出しできるようにします。
+		<table class="help_table" border="4">
+		<tr><td nowrap><strong>追加・更新</strong></td>
+		<td>メインウィンドウ内容（Source/DestDir, コマンドモード, フィルタ指定、バッファ指定、エラー時継続オプション、完了時間予測、自動/同一/別HDDモード）にジョブ名を付けて保存・更新します。</td></tr>
+		<tr><td nowrap><strong>削除</strong></td>
+		<td>選択したジョブを削除します。</td></tr>
+		</table>
+	<a name="joblist"/>
+	<h3 class="help_head3">ジョブ管理 -> ジョブリストモード</h3>
+	<div class="help_sub_section">
+		ジョブの集合をジョブリストとして保存、呼び出し、実行することができます。<br>
+		ジョブリスト内のジョブの実行順は任意の順序に変更することができます。<br>
+		<table class="help_table" border="4">
+		<h4 class="help_head4">ジョブリスト管理</h4>
+		ジョブリストの呼び出し、保存、削除ができます。<br>
+		<tr><td nowrap><strong>ジョブリスト作成/保存</strong></td>
+		<td>現在のジョブリストの内容を作成/保存します。</td></tr>
+		<tr><td nowrap><strong>ジョブリスト削除</strong></td>
+		<td>現在のジョブリストを削除します。<br>
+			削除時、ジョブリスト内のジョブは全て削除されます。<br>
+			(削除対象ジョブリスト外に同一名称のジョブが存在する場合は削除しません)</td></tr>
+		<tr><td nowrap><strong>強制起動</strong></td>
+		<td>ジョブリスト中のジョブでパス不正またはメモリ確保失敗などの致命的なエラーが発生した場合、ジョブリストを続行するかどうかを指定します。<br>
+			(チェックを外した場合、致命的なエラーが発生するとジョブリスト実行をキャンセルします。)<br>
+			ジョブリスト中のジョブの順序依存性を考慮して設定してください。</td></tr>
+		</table>
+		<table class="help_table" border="4">
+		<h4 class="help_head4">ジョブリスト編集</h4>
+		ジョブリスト内へのジョブの追加、削除、順序変更、実行などを行います。<br>
+		<tr><td nowrap><strong>ジョブ追加</strong></td>
+		<td>現在のメインウインドウの内容をYYYYMMDD_HHMMSSZZZの名称で新規ジョブとしてジョブリストに追加します。実行とリストアップはそれぞれ別に登録可能です。</td></tr>
+		<tr><td nowrap><strong>ジョブリスト実行</strong></td>
+		<td>現在のジョブリストを実行します。実行ボタンを押すとジョブリストキャンセルボタンになります。</td></tr>
+		<tr><td nowrap><strong>ジョブリストキャンセル</strong></td>
+		<td>現在実行中のジョブと以降のジョブ実行全てをキャンセルします。<br>
+		<font color="red">実行済みのジョブのキャンセル(巻き戻し)はできません。</font></td></tr>
+		<tr><td nowrap><strong>ジョブをダブルクリック</strong></td>
+		<td>選択したジョブ名を任意の名称に変更します。</td></tr>
+		<tr><td nowrap><strong>ジョブをクリック->Altキーを押しながらUpキー</strong></td>
+		<td>選択しているジョブの実行順序を上げます。</td></tr>
+		<tr><td nowrap><strong>ジョブをクリック->Altキーを押しながらDownキー</strong></td>
+		<td>選択しているジョブの実行順序を下げます。</td></tr>
+		<tr><td nowrap><strong>ジョブをクリック->任意位置へのドラッグ＆ドロップ</strong></td>
+		<td>選択しているジョブの実行順序を入れ替えます。</td></tr>
+		<tr><td nowrap><strong>ジョブを削除</strong></td>
+		<td>選択しているジョブをジョブリストから削除します。</td></tr>
+		<tr><td nowrap><strong>全てのジョブを削除</strong></td>
+		<td>ジョブリストに表示されている全てのジョブをジョブリストから削除します。</td></tr>
+		</table>
+		<table class="help_table" border="4">
+		<h4 class="help_head4">ジョブリストモード実行時の注意点</h4>
+		ジョブリストモードでのバッチ実行時は既存機能の動作が以下のように変更されます。<br>
+		<tr><td nowrap><strong>直ちに開始</strong></td>
+		<td>設定に関係なく、他のRapidCopyの実行終了を待たずに強制実行します。<br></td></tr>
+		<tr><td nowrap><strong>キャンセル...</strong></td>
+		<td>現在実行しているジョブをキャンセルします。(次のジョブがある場合、次のジョブが起動します)<br></td></tr>
+		<tr><td nowrap><strong>終了時処理</strong></td>
+		<td>メール送信、コマンド実行、サウンド再生はジョブリストの実行終了時に実行します。</td></tr>
+		<tr><td nowrap><strong>ログ機能</strong></td>
+		<td>詳細ファイルログはジョブリスト単位でYYYYMMDD-HHMMSS-ジョブリスト名.log(csv)ファイルを生成します。<br>
+			一つの詳細ファイルログにジョブリスト中の全てのジョブの実行結果を格納します。<br>
+			各ジョブでsrc/dstパス不正のような致命的なエラーが発生した場合、エラー内容は標準ログに出力されます。</td></tr>
+		<tr><td nowrap><strong>CLIモード</strong></td>
+		<td>--auto_close:ジョブリスト中のジョブで一つでもエラーが発生している場合は自動終了しません。<br>
+			--force_close:ジョブリスト中の全てのジョブ終了後に強制的に終了します。</td></tr>
+		<tr><td nowrap><strong>実行前確認ダイアログ</strong></td>
+		<td>その他オプションで設定できる実行前確認ダイアログは設定に関わらず表示しません。</td></tr>
+		</table>
+	</div>
+
+	<h3 class="help_head3">一般設定</h3>
+	<div class="help_sub_section">
+		RapidCopyの一般設定（各種デフォルト値、I/Oパラメータ、ログ記録等）を行います。
+		<h4 class="help_head3">I/O設定->最大I/O単位(MB)</h4>
+		RapidCopyがデータを読み書きする際のRead/Write時のデータ単位を指定します。<br>
+		10G Ethernet等の超高速ネットワーク環境の場合は4-8MBを指定すると高速化する事があります。<br>
+		10G環境下以外ではデフォルト値(1MB)を推奨します。
+		<h4 class="help_head3">I/O設定->ベリファイ方式</h4>
+		ベリファイ時のハッシュアルゴリズムを選択します。デフォルトはMD5です。<br>
+		CPUリソースを節約したい場合はxxHashを使用することでCPU使用率を下げることができます。<br>
+		<table class="help_table" border="4">
+		<tr><th nowrap>ベリファイモード</th><th>ハッシュ長</th>
+		<tr><td nowrap><strong>SHA-1</strong></td><td>160bit</td></tr>
+		<tr class="tr_default"><td nowrap><strong>MD5</strong></td><td>128bit</tr>
+		<tr><td nowrap><strong>xxHash</strong></td><td>64bit</td></tr>
+		<tr><td nowrap><strong>SHA-2(256bit)</strong></td><td>256bit</td></tr>
+		<tr><td nowrap><strong>SHA-2(512bit)</strong></td><td>512bit</td></tr>
+		<tr><td nowrap><strong>SHA-3(256bit)</strong></td><td>256bit</td></tr>
+		<tr><td nowrap><strong>SHA-3(512bit)</strong></td><td>512bit</td></tr>
+		</table>
+		<h4 class="help_head3">ログ設定</h4>
+		RapidCopyの各種ログ設定を行います。<br>
+		デフォルトでは標準ログのみ有効となっています。<br>
+		log出力は全てUTF-8で出力されます。<br>
+		<table class="help_table" border="4">
+
+		<tr><td nowrap><strong>Source/DestDirの履歴数</strong></td><td>再起動後に有効になります</td>
+		<tr><td nowrap><strong>標準ログに記録を行う(RapidCopy.log)</strong></td><td>実行結果およびエラーのみを標準ログに記録します</td></tr>
+		<tr><td nowrap><strong>EA(xattr)関連エラーをログに記録する</strong></td><td>EA(xattr)関連エラーを各種ログに記録します</tr>
+		<tr><td nowrap><strong>ACL関連エラーをログに記録する</strong></td><td>ACL関連エラーを各種ログに記録します</td></tr>
+		<tr><td nowrap><strong>詳細ファイルログを記録する(Log/DATE.log)</strong></td><td>コピー毎にLog/日付.logファイルを作成します。</td></tr>
+		<tr><td nowrap><strong>詳細ファイルCSVデータを記録する(Log/DATE.csv)</strong></td><td>コピー毎にLog/日付.csvファイルを作成します。<br>
+		csvファイルはBOM無しのUTF-8で出力します。<br>
+		なお、1ジョブ単位のログデータは"//////////"で区切っています。<br></td></tr>
+		</table>
+		<a name="listup"/>
+		<br>
+		リストアップや詳細ログ内の出力記号についての説明は以下の通りです。<br>
+		<table class="help_table" border="4">
+		<tr><td nowrap><strong>+</strong></td><td>ファイルコピー対象(上書きを含む)</td>
+		<tr><td nowrap><strong>-</strong></td><td>ファイル削除対象</td></tr>
+		<tr><td nowrap><strong>パス末尾に"/"</strong></td><td>対象がディレクトリ</tr>
+		<tr><td nowrap><strong>パス末尾に"=>"</strong></td><td>対象がハードリンクファイル</td></tr>
+		<tr><td nowrap><strong>パス末尾に"->"</strong></td><td>対象がシンボリックリンクファイル</td></tr>
+		</table>
+	</div>
+	<h3 class="help_head3">設定 → 自動/同一/別HDDモード</h3>
+	<div class="help_sub_section">
+		<a href="#disk_mode">自動/同一/別HDDモード</a>を指定します（デフォルトは自動）。なお、Ctrl+K で各モードに、順次、切り替えすることもできます。
+		<br>
+	</div>
+	<h3 class="help_head3">設定 → コピー元とコピー先を交換</h3>
+	<div class="help_sub_section">
+		相互に同期したい場合などのために、コピー元とコピー先の内容を交換します。その際、<a href="#backslash_behavior">末尾の '/' の有無による挙動の違い</a>などを踏まえて、パス内容を必要に応じて加工します。<br>（例えば、コピー元: /Volumes/TEST/AAA/BBB、コピー先: /Volumes/TEST/AAA/BBBの場合、コピー元: /Volumes/CCC/BBB、コピー先: /Volumes/TEST/AAA/ となります)<br>
+		なお、コピー元が複数指定されている場合は利用できません。<br>
+		Ctrl+Shift+S でも実行可能です。
+	</div>
+
+	<h3 class="help_head3">設定 → 終了時処理</h3>
+	<div class="help_sub_section">
+		終了時処理を選択します。<br>
+		さらにサウンド設定やコマンド実行、メール送信などの実行後アクションを設定することができます。<br>
+		プリセットとして新しい終了時処理を追加することも可能です。<br>
+		なお、サウンドはコマンド実行後に再生します。(windows版とは実行順が逆です)<br>
+		<h3 class="help_head3"><b>設定 → 終了時処理 →コマンド実行</b></h3>
+		<div class="help_sub_section">
+			指定した文字列を/usr/bin/shに引き渡してバックグラウンドでコマンド実行します。<br>
+			セミコロンでコマンドを分ける事で複数コマンドを実行できます。
+		</div>
+		<h3 class="help_head3"><b>設定 → 終了時処理 →サウンド再生</b></h3>
+		<div class="help_sub_section">
+			終了時に任意のサウンドを再生します。<br>
+			使用できるファイル形式はwavのみです。<br>
+		</div>
+		<h3 class="help_head3"><b>設定 → 終了時処理 →メール設定</b></h3>
+		<div class="help_sub_section">
+			コピー結果をメール送信します。<br>
+			送信プロトコルはSMTPSのみ対応しています。<br>
+			gmailアカウントで機能確認をしています。設定例は以下を参照してください。<br>
+			<IMG SRC="RapidCopyEmailSettingExample.png" ALT="emailsetting">
+			<br>
+		</div>
+	</div>
+	<h3 class="help_head3">設定 → フィルタ表示</h3>
+	<div class="help_sub_section">
+		<a name="filter"/>
+		各種フィルタの有効／無効を指定します。<br>
+		なお、移動モードではフィルタ指定は無視されます。<br>
+		<br>
+		<table class = "help_table" border="4">
+		<tr><td><strong>Include</strong></td>
+		<td>指定文字列（<a href="#wild_card">UNIXワイルドカード形式</a>可）にマッチするファイルのみをコピー対象にします。複数指定する場合は、セミコロンで区切ります。フォルダを指定する場合は、文字列の末尾に '\'を付与します。（例： *.txt; My Folder[0-9]\）<br>ファイルまたはフォルダに対して、それぞれ明示的な指定がない場合は、*を指定したものと見なします。
+		<br>	<font color="red">注意：Include/excludeフィルタにフォルダを指定した場合、最初にマッチしたフォルダだけがコピー対象となります。<br>(複数のマッチフォルダがあっても最初にマッチしたフォルダのみがコピーされます)</font><br>
+		削除モード＋ファイルに対してInclude指定をした場合、フォルダは削除されません。<br></td></tr>
+		<tr><td><strong>Exclude</strong></td>
+		<td>Include の反対で、マッチするファイル・フォルダを除外します。</td></tr>
+		<tr><td><strong>FromDate</strong></td>
+		<td>指定日時（<a href="#date_filter">書式</a>）以降の更新タイムスタンプを持つファイルを対象とします。<br>
+		書式は絶対日付指定("20090101")以外に、相対日付も<a href="#date_filter">可能</a>です(10日前: '-10D')</td></tr>
+		<tr><td><strong>ToDate</strong></td>
+		<td>指定日時以前の更新タイムスタンプを持つファイルを対象とします。</td></tr>
+		<tr><td><strong>MinSize</strong></td>
+		<td>指定サイズ以上のファイルを対象とします。末尾に K/M/G/T を付与することで、サイズの略記表記可能です。</td></tr>
+		<tr><td><strong>MaxSize</strong></td>
+		<td>指定サイズ以下のファイルを対象とします。</td></tr>
+		</table>
+		<br>
+		<a name="wild_card"/>
+		<strong>Include / Exclude フィルタ指定で使用可能なワイルドカード書式</strong>
+		<table class="help_table" border="4">
+		<tr><td>*</td><td>0文字以上の任意の文字</td>
+		<tr><td>?</td><td>1文字の任意の文字</td>
+		<tr><td>[abc]</td><td>abc のどれか 1文字</td>
+		<tr><td>[^abc]</td><td>abc のどれか 1文字以外。</td>
+		<tr><td>[a-z]</td><td>a-z までの任意の1文字</td>
+		<tr><td>[0-9]</td><td>0-9までの任意の1文字</b></font></td>
+		<tr><td>\<font color="red"></td><td>エスケープ文字（なお、末尾の '\'だけはディレクトリを表します）</td>
+		</table>
+		<b>（注意:上記以外のワイルドカード仕様についてはQRegExp::WildcardUnixの仕様に準じます)</b>
+		<br><br>
+
+		<a name="date_filter"/>
+		<strong>FromDate/ToDate フィルタ指定の書式</strong>
+		<table class="help_table" border="4">
+		<tr><td>絶対日時指定</td><td>日時を YYYYMMDD で指定</td>
+		<tr><td>相対日時指定</td><td>-10D（10日前）などのように、"+|- 数字 W|D|h|m|s" の書式で指定します。<br>W|D|h|m|s はそれぞれ、週、日、時、分、秒を表します。<br><strong>（大文字小文字を区別します）</strong></td>
+		</table>
+	</div>
+</div>
+
+<a name="cmdline"/>
+<h2 class="help_head2">6. コマンドラインモード</h2>
+<div class="help_section">
+		基本的な書式は、以下の通りです。<br><br>
+	　<strong>RapidCopy [--オプション類] [--to コピー先パス] コピー元パス1 コピー元パス2 … </strong>
+	<div class="help_sub_section">
+	　1. GUI モードと違い、区切り文字は空白文字になります。空白文字を含むパス名は、'\'でエスケープしてください<br>
+	　	2. ターミナルから起動した場合、デフォルトではGUI操作による終了までターミナル側は待ち状態になります。<br>
+　　　シェルスクリプト等に組み込む場合は、必要に応じてバックグラウンド実行や--auto_closeや--force_close指定による<br>
+　　　自動終了オプションを利用してください。<br>
+	</div>
+	<br>
+	指定可能なオプションは、以下の通りです。
+	<br><br>
+	-h,--help … コマンドヘルプを表示します。
+	<br><br>
+	<strong>--cmd (noe|dif|siz|upd|for|syn|ves|mov|del) </strong>…動作モード指定。<br>
+	　（cmd 指定省略時は difモード。del指定時は、--to コピー先パス は使いません）
+	<div class="help_sub_section">
+		<table class="help_table" border="4">
+		<tr><th nowrap>動作モード</th><th>GUIの場合の表記</th>
+		<tr><td nowrap><strong>noe</strong></td><td>差分（上書きなし）</tr>
+		<tr class="tr_default"><td nowrap><strong>dif</strong></td><td>差分（サイズ・日付）</td></tr>
+		<tr><td nowrap><strong>siz</strong></td><td>差分（サイズ）(*1)</td></tr>
+		<tr><td nowrap><strong>upd</strong></td><td>差分（最新日付）</td></tr>
+		<tr><td nowrap><strong>for</strong></td><td>コピー（全上書き）</td></tr>
+		<tr><td nowrap><strong>syn</strong></td><td>同期（サイズ・日付）</td></tr>
+		<tr><td nowrap><strong>ves</strong></td><td>ベリファイ（サイズ）</td></tr>
+		<tr><td nowrap><strong>mov</strong></td><td>移動（全上書き）</td></tr>
+		<tr><td nowrap><strong>del</strong></td><td>全削除</td></tr>
+		</table>
+		(*1)--ltfs trueと同時に指定した場合のみ指定できます。
+	</div>
+	<strong>--auto_close</strong> ... コピー終了後、自動的に終了します。ただし、エラーが一つ以上発生している場合は自動終了しません。
+	<br><br>
+	<strong>--force_close</strong> ... コピー終了後、エラーが発生していた場合も、強制的に終了します
+	<br><br>
+	<strong>--open_window</strong> ... タスクトレイに格納しません（直ちに実行開始しない場合は指定不要）
+	<br><br>
+	<strong>--estimate</strong> ... コピー完了時間予測を行います
+	<br><br>
+	<strong>--no_exec</strong> ... パラメータをメインウィンドウにセットしますが、実行はしません
+	<br><br>
+	<strong>--no_confirm_del</strong> ... --delete 時に、動作開始の問い合わせをしません
+	<br><br>
+	<strong>--no_confirm_stop</strong> ... 継続不能エラー発生時にも、エラーを出しません
+	<br><br>
+	<strong>--error_stop</strong> (true|false) ... エラー発生時にダイアログを出し、続行するかを問い合わせます
+	<br><br>
+	<strong>--bufsize N(MB)</strong> ... バッファサイズを MB 単位で指定します
+	<br><br>
+	<strong>--log</strong> (true|false) … 標準ログ(RapidCopy.log) にログを出力します<s>（/log=FALSE で抑止）</s>
+	<br><br>
+	<strong>--logfile 標準ログファイル名</strong> ... 標準ログファイル名を指定します
+	<br><br>
+	<strong>--filelog</strong> (true|false|任意のファイル名) ... 詳細ファイルログを記録します。RapidCopy/Log ディレクトリ配下に、YYYYMMDD-hhmmss-n.logとして保存します。ベリファイ時はハッシュ値も記録されます。<br>（--filelog filename で指定ファイルに保存可能。ただし、同じファイルを指定して同時に複数の RapidCopyを実行した場合、ログ出力が混じる可能性があります）
+	<br><br>
+	<strong>--filecsv</strong> (true|false) ... 詳細ファイルログをcsv形式で記録します。保存先及びファイル名については--filelogと同一です。<br>
+	--filecsvを指定する場合は--filelogを有効にする必要があります。<br>
+	<br><br>
+	<strong>--skip_empty_dir</strong> (true|false) ... フィルタ指定時、空ディレクトリをコピーしません
+	<br><br>
+	<strong>--job ジョブ名</strong> ... 事前に登録してあるジョブを指定します
+	<br><br>
+	<strong>--joblist ジョブリスト名</strong> ... 事前に登録してあるジョブリストを指定します
+	<br><br>
+	<strong>--force_start</strong> (true|false) ... 他のRapidCopyがコピー実行中の場合でも直ちに実行します
+	<br><br>
+	<strong>--disk_mode (auto|same|diff)</strong> ... <a href="#disk_mode">自動/同一/別HDDモード</a>を指定します。（デフォルト: auto）
+	<br><br>
+	<strong>--speed (full|autoslow|9-1|suspend) </strong> ... 速度コントロールを行います。
+	<br><br>
+	<strong>--srcfile 任意のファイル名</strong> ... コピー元に指定するパス一覧をファイルで指定します。1行に1パスを記述してください。<br>（大量のパスを指定すると、コピー元パスの表示/再描画に非常に時間が掛かる事があります）
+	<br><br>
+	<strong>--include "..."</strong> ... Include フィルタを指定します（<a href="#filter">詳細</a>）
+	<br><br>
+	<strong>--exclude "..."</strong> ... Exclude フィルタを指定します（<a href="#filter">詳細</a>）
+	<br><br>
+	<strong>--from_date "..."</strong> ... 更新日付フィルタ（最古）を指定します（<a href="#filter">詳細</a>）
+	<br><br>
+	<strong>--to_date "..."</strong> ... 更新日付フィルタ（最新）を指定します（<a href="#filter">詳細</a>）
+	<br><br>
+	<strong>--min_size "..."</strong> ... サイズフィルタ（最小）を指定します（<a href="#filter">詳細</a>）
+	<br><br>
+	<strong>--max_size "..."</strong> ... サイズフィルタ（最大）を指定します（<a href="#filter">詳細</a>）
+	<br><br>
+	<strong>--wipe_del</strong> (true|false) ... 削除モード時に、ファイルを削除する前に上書き＆リネームして、復元を無効にします
+	<br><br>
+	<strong>--acl</strong> (true|false) ... アクセスコントロールリスト(ACL)をコピーします
+	<br><br>
+	<strong>--ea</strong> (true|false) ... EA(Extended Attribute)をコピーします
+	<br><br>
+	<strong>--reparse</strong> (true|false) ... シンボリックリンクを（配下ではなく）それ自体をコピーします（<a href="#reparse">詳細</a>）
+	<br><br>
+	<strong>--verify (md5|sh1|xxh|s22|s25|s32|s35|fal)</strong> ... データのベリファイを行います
+		<div class="help_sub_section">
+
+		<table class="help_table" border="4">
+		<tr><th nowrap>ベリファイモード</th><th>GUI表記</th>
+		<tr><td nowrap><strong>md5</strong></td><td>MD5</tr>
+		<tr><td nowrap><strong>sh1</strong></td><td>SHA-1</td></tr>
+		<tr><td nowrap><strong>xxh</strong></td><td>xxHash</td></tr>
+		<tr><td nowrap><strong>s22</strong></td><td>SHA-2(256bit)</td></tr>
+		<tr><td nowrap><strong>s25</strong></td><td>SHA-2(512bit)</td></tr>
+		<tr><td nowrap><strong>s32</strong></td><td>SHA-3(256bit)</td></tr>
+		<tr><td nowrap><strong>s35</strong></td><td>SHA-3(512bit)</td></tr>
+		<tr><td nowrap><strong>fal</strong></td><td>ベリファイ抑止</td></tr>
+		</table>
+	</div>
+	<br>
+	<a name="linkdest"/>
+	<strong>--linkdest</strong> (true|false) ... ハードリンクを可能な限り再現します。詳細は <a href="#hardlink">こちらを参照</a> ください。
+	<br><br>
+	<a name="recreate"/>
+	<strong>--recreate</strong> (true|false) ... ファイル更新の挙動を、既存ファイルの上書きから、既存ファイル削除＆再生成に変更します。<br>
+	（--linkdest 指定時には、--recreate指定の有無に関わらず、この動作を行います）常時、この動作を有効にしたい場合、RapidCopy.ini [main] recreate=1 とします。
+
+	<br><br>
+	<strong>--postproc (終了時処理名|false)</strong> ... 事前に登録してある終了時処理名を指定します。
+	<br><br>
+	<strong>--ltfs (true|false) ... LTFSモードを有効にします</strong>
+	<br><br>
+	<strong>--nodot (true|false) ... "."から始まる隠しファイルやフォルダを無視します</strong>
+	<br><br>
+	<strong>--xpos (xpos) ... RapidCopy起動時のウインドウ位置のx座標を指定します。--yposと同時に指定してください。</strong>
+	<br><br>
+	<strong>--ypos (ypos) ... RapidCopy起動時のウインドウ位置のy座標を指定します。--xposと同時に指定してください。</strong>
+	<br><br>
+	<strong>例）<br>
+		　/Volumes/srchdd配下を/Volumes/dsthddに差分コピーする場合<br>
+		　RapidCopy --cmd dif --to /Volumes/dsthdd/ /Volumes/srchdd
+	<br><br>
+	<h3 class="help_head3"><b>リターンコード仕様</b></h3>
+	<div class="help_sub_section">
+	<strong></strong>
+	<br>
+	--auto_closeまたは--force_closeまたはコマンド引数不正時、親プロセスにリタンコードを返却します。
+	<br>
+	各リターンコードの意味は次の通りです。
+	<br>
+	<br>
+	<div class="help_sub_section">
+		<table class="help_table" border="4">
+		<tr><th nowrap>リターンコード値</th><th>意味</th>
+		<tr><td nowrap><strong>0(EX_OK)</strong></td><td>正常終了(エラーファイル数0かつエラーディレクトリ数0)</tr>
+		<tr><td nowrap><strong>64(EX_USAGE)</strong></td><td>コマンドライン引数不正</tr>
+		<tr><td nowrap><strong>79</strong></td><td>異常終了(エラーファイル数1以上またはエラーディレクトリ数1以上</tr>
+		</table>
+	</div>
+	</div>
+
+</div>
+
+<a name="diff"/>
+<h2 class="help_head2">7. FastCopy v2.11からの追加機能、仕様変更、削除した機能の一覧</h2>
+<div class="help_section">
+
+  Windows版FastCopy v2.11から変更、追加、削除した主な仕様一覧は以下の通りです。<br>
+
+<h3 class="help_head3">機能追加</h3>
+  <div>
+   <li>コピー進行確認用のプログレスバーの追加、コピー元パスの複数行表示などでGUIの操作性を改善しました。</li>
+   <li>詳細ファイルLogに書き込み完了時刻(ベリファイ有効時はベリファイ完了時刻)を追加で記録するようにしました。</li>
+   <li>ベリファイモードに低CPU負荷(MD5比約50%)のxxHashや、SHA-2,SHA-3を追加しました。</li>
+   <li>他コピーツールでのコピー後チェックでの需要を想定して、コピーモードにベリファイ専用のモードを追加しました。</li>
+   <li>長時間コピー時、離れていても実行結果を確認可能とするE-Mail送信機能を「設定->終了時処理」に追加しました。</li>
+   <li>「設定->一般設定->I/O設定」でベリファイモードをGUIから任意で選べるようにしました。</li>
+   <li>LTFSのLTOに書き込みを行える「LTFS」モードを追加しました。</li>
+   <li>コピーバッチをGUIで組むことができるジョブリスト機能を追加しました</li>
+  </div>
+
+  <h3 class="help_head3">仕様変更</h3>
+  <div>
+  <li>ファイル破損検出のエビデンス利用を想定して、リストアップでも詳細ファイルLogを記録するよう仕様を変更しました。</li>
+  <li>フィルタ機能の表示を一体化、統合すると同時に標準でフィルタが表示されないように仕様変更しました。</li>
+  </div>
+  <br>
+  <h3 class="help_head3">機能削除または未実装</h3>
+  <div>
+  <li>小さいファイル読み込み時にosキャッシュを使用する機能を削除しました。</li>
+  <li>終了時処理のスタンバイ、休止、シャットダウン等の電源関連処理は未実装です。</li>
+  <li>その他、Windowsとの差異の問題でコピー挙動がwindows版と異なる箇所があります。</li>
+  </div>
+</div>
+
+<a name="warning"/>
+<h2 class="help_head2">8. 注意（危険なところ）</h2>
+<div class="help_section">
+	コピー先ファイルは、動作モードに応じて、問い合わせなしに、強制的に上書きすることがあります。<br>
+	同期モードでは、状況に応じて、コピー先のファイル＆ディレクトリを強制削除します。<br>
+	削除モードでは、ファイル＆ディレクトリを強制削除します。<br>
+	<br>
+	<font color="red">
+	ベリファイを有効にしたコピーの実行中にエラー中断またはキャンセルが発生した場合、コピー完了済ファイルのベリファイをスキップします。<br>
+	<b>この場合、既にコピー完了したファイルの整合性は保証しません。(*1)</b><br>
+	上記のようなケースでコピー済ファイルの整合性を保証したい場合はキャンセル実行後にベリファイを実行してください。<br>
+	</font>
+	<br>
+	バグがあれば、悲惨な結果になる可能性があります。<br>
+	（「<a href="#license">2. ライセンス＆免責</a>」を熟読のこと）
+</div>
+
+<a name="misc"/>
+<h2 class="help_head2">9. その他</h2>
+<div class="help_section">
+<h3 class="help_head3">ファイルの出力先について</h3>
+
+	設定ファイル(<b>RapidCopy.ini</b>)および各種ログファイルの出力先は以下の通りです。<br>
+	<table class="help_table" border="4">
+		<tr><th></th><th>RapidCopy</th></tr>
+		<tr><td nowrap><strong>設定ファイル</strong></td><td>$HOME/ドキュメントフォルダ/RapidCopy.ini</td></tr>
+		<tr><td nowrap><strong>標準ログ</strong></td><td>$HOME/ドキュメントフォルダ/RapidCopy.log</td></tr>
+		<tr><td nowrap><strong>詳細ファイルログ及びcsv</strong></td><td>$HOME/ドキュメントフォルダ/Log/YYYYMMMM-hhmmss-N.log</td></tr>
+	</table>
+	<font color="red">ディスク残容量に関係なく無条件にファイルを出力します。残ディスク容量に注意してください。</font></b><br>
+	<li>設定ファイルはwindows版と互換性がありません。
+</div>
+
+<a name="knownbug"/>
+<h2 class="help_head2">10. 既知の問題点</h2>
+<div class="help_section">
+	<div class="help_sub_section">
+<a href="https://groups.google.com/forum/?hl=ja#!forum/rapidcopy_jp">RapidCopy掲示板</a>に移行しました。
+	</div>
+</div>
+
+<a name="todo"/>
+<h2 class="help_head2">11.ToDo</h2>
+<div class="help_section">
+	<li>ソースコードリファクタリング
+	<li>Ctrl+V及びベリファイモード時のベリファイ速度改善
+	<li>ベリファイ中断時の仕様改善
+	<li>御本家FastCopy v3.0に実装された各種新機能の移植
+	<li>GNOME,KDE等の各種デスクトップ環境対応
+</div>
+
+<a name="history"/>
+<h2 class="help_head2">12. 履歴</h2>
+<div class="help_section">
+
+<table class="help_table" border="4">
+<tr><th>Version</th><th>説明</th></tr>
+<tr><td>1.1.0</td><td>初版(2016/3/2)</td></tr>
+</table>
+</div>
+</div>
+
+</td><td valign="top"  width="150">
+<div align="right">
+
+</div>
+
+</td></tr></table>
+</center>
+
+<HR>
+<br>
+<HR>
+<H3><A HREF="http://www.lespace.co.jp/">HOME</A></H3>
+</body>
+</blockquote>
+
