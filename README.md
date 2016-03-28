@@ -34,6 +34,8 @@ OS:Ubuntu14.04 LTS(x64)
 In either environment Qt5.4.1 has to be always installed.  
 You might need to be installed other library, such as g++,depending on your environment.  
 
+デフォルトではubuntu14.04をターゲットとしています。  
+CentOS7でコンパイルする場合はrapidcopy_main.proのLIBS行を変更してください。  
 Default target is ubuntu 14.04(LTS)  
 Please change the LIBS line of rapidcopy_main.pro If you want to compile in CentOS7.  
 
