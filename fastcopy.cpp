@@ -3154,6 +3154,7 @@ BOOL FastCopy::ReadFileWithReduce(int hFile, void *buf, DWORD size, DWORD *reads
         }
 
         //aio有効かつ要求バイトが同時io実行数以上？こっちはあくまで実験用のなごりだよ
+        /*
         if(info.flags_second & FastCopy::ASYNCIO_MODE && (trans % aio_pnum) == 0){
             memset(&readlist,0,(sizeof(struct aiocb) * aio_pnum));
             //fdのカレントオフセット取得
@@ -3191,8 +3192,9 @@ BOOL FastCopy::ReadFileWithReduce(int hFile, void *buf, DWORD size, DWORD *reads
             lseek(hFile,transed,SEEK_CUR);
         }
         else{
-            transed = read(hFile,(BYTE *)buf + total,trans);
-        }
+        */
+        transed = read(hFile,(BYTE *)buf + total,trans);
+        //}
 
         if(info.flags_second & STAT_MODE){
             QTime time = QTime::currentTime();
@@ -5194,6 +5196,7 @@ BOOL FastCopy::WriteFileWithReduce(int hFile, void *buf, DWORD size, DWORD *writ
             et.start();
         }
         //aio有効かつ要求バイトが同時io実行数以上？
+        /*
         if(info.flags_second & FastCopy::ASYNCIO_MODE && (trans % aio_pnum) == 0){
             memset(&writelist,0,(sizeof(struct aiocb) * aio_pnum));
             //fdのカレントオフセット取得
@@ -5232,8 +5235,9 @@ BOOL FastCopy::WriteFileWithReduce(int hFile, void *buf, DWORD size, DWORD *writ
             lseek(hFile,transed,SEEK_CUR);
         }
         else{
-            transed = write(hFile,(BYTE *)buf + total,trans);
-        }
+        */
+        transed = write(hFile,(BYTE *)buf + total,trans);
+        //}
         if(info.flags_second & STAT_MODE){
             QTime time = QTime::currentTime();
             QString time_str = time.toString("hh:mm:ss.zzz");
