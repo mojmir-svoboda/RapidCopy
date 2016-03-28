@@ -13,7 +13,11 @@ TARGET = RapidCopy
 DEFINES += _GNU_SOURCE
 TRANSLATIONS += RapidCopy_ja_JP.ts
 
-LIBS += /usr/lib64/libacl.a /usr/lib64/libbsd_static.a
+#if compile on CentOS 7
+#LIBS += /usr/lib64/libacl.so /usr/lib64/libbsd.so
+
+#if compile on ubuntu14.04(default)
+LIBS += /usr/lib/libacl.so /usr/lib/x86_64-linux-gnu/libbsd.so
 
 SOURCES += main.cpp \
 	mainwindow.cpp \
