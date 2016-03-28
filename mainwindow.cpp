@@ -5189,7 +5189,7 @@ void MainWindow::dropEvent(QDropEvent *event){
             //Cmdキー押下検知中だろうとなんだろうと要素先頭のパスで置き換え
             QFileInfo dstdir(drop_str_list[0].toLocalFile());
             if(dstdir.exists() && dstdir.isDir()){
-                ui->plainTextEdit_Dst->setPlainText(drop_str_list[0].toLocalFile());
+                ui->plainTextEdit_Dst->setPlainText(drop_str_list[0].toLocalFile() + "/");
                 CheckJobListmodified();
             }
         }
