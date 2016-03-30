@@ -612,7 +612,7 @@ BOOL FastCopy::InitSrcPath(int idx)
     maxWriteSize = min(maxReadSize, maxWriteSize);
     maxDigestReadSize = min(maxReadSize, maxDigestReadSize);
 
-    if(free != NULL){
+    if(fullpath != NULL){
         free(fullpath);
     }
     return	TRUE;
@@ -676,6 +676,10 @@ BOOL FastCopy::InitDeletePath(int idx)
         // 最大転送サイズ
         maxWriteSize = min((DWORD)info.bufSize, maxWriteSize);
         maxWriteSize = max(MIN_BUF, maxWriteSize);
+    }
+    
+    if(fullpath != NULL){
+        free(fullpath);
     }
 
     return	TRUE;
