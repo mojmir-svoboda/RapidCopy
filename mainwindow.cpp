@@ -1571,6 +1571,8 @@ void MainWindow::sighandler_mainwindow(int signum){
     //標準ファイルログ書き出し用排他を確保していたら解放
     if(hErrLogMutex != NULL){
         sem_post((sem_t *)hErrLogMutex);
+        //どうせプロセスダウンなのでsem_close呼ばなくてもいいんだけど念のため
+		sem_close(hErrLogMutex);
     }
     //FastCopyクラスの後始末コール
     fastCopy.signal_handler(signum);
@@ -2675,9 +2677,12 @@ BOOL MainWindow::EnableErrLogFile(BOOL on)
         hErrLog = SYSCALL_ERR;
 
         //プロセス間排他開放
-        if(sem_post((sem_t*)hErrLogMutex) == -1){
+        if(sem_post((sem_t*)hErrLogMutex) == SYSCALL_ERR){
             qDebug() << "sem_post(hErrLogMutex) failed.";
         }
+        if(sem_close((sem_t*)hErrLogMutex) == SYSCALL_ERR){
+			qDebug() << "sem_close(hErrLogMutex) failed.";
+		}
         hErrLogMutex = NULL;
     }
     return	TRUE;
