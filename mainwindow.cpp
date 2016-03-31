@@ -1572,7 +1572,7 @@ void MainWindow::sighandler_mainwindow(int signum){
     if(hErrLogMutex != NULL){
         sem_post((sem_t *)hErrLogMutex);
         //どうせプロセスダウンなのでsem_close呼ばなくてもいいんだけど念のため
-		sem_close(hErrLogMutex);
+	sem_close((sem_t *)hErrLogMutex);
     }
     //FastCopyクラスの後始末コール
     fastCopy.signal_handler(signum);
