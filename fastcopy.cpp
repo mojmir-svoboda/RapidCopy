@@ -6278,6 +6278,8 @@ void FastCopy::signal_handler(int signum){
     if(isgetSemaphore){
         //死ぬ前にせめてセマフォは解放していくぞ！
         sem_post((sem_t*)rapidcopy_semaphore);
+        //どうせプロセスダウンなのでsem_close呼ばなくてもいいんだけど念のため
+		sem_close(rapidcopy_semaphore);
         //テストでとりあえず呼んでるだけよ。本来はコールしちゃだめよ！
         //qDebug() << "signal on sem_post() called.";
     }
