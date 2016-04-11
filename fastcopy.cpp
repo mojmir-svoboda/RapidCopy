@@ -4536,7 +4536,7 @@ BOOL FastCopy::WriteDirProc(int dir_len)
                                 writeReq->stat.renameCount, writeReq->stat.cFileName);
     }
     if(buf_size){
-        dstDirExtBuf.AddUsedSize(buf_size);
+
         //課題:dirのxattr分割送信対応までとりあえず
         if(dstDirExtBuf.RemainSize() < MIN_DSTDIREXT_BUF
             && !dstDirExtBuf.Grow(ALIGN_SIZE(buf_size,MIN_DSTDIREXT_BUF))) {
@@ -4547,6 +4547,7 @@ BOOL FastCopy::WriteDirProc(int dir_len)
         sv_stat.acl = dstDirExtBuf.Buf() + dstDirExtBuf.UsedSize();
         sv_stat.ead = sv_stat.acl + sv_stat.aclSize;
         sv_stat.rep = sv_stat.ead + sv_stat.eadSize;
+        dstDirExtBuf.AddUsedSize(buf_size);
     }
 
     if (is_mkdir) {
