@@ -31,13 +31,16 @@ OS:CentOS7.1(x64)
 OS:Ubuntu14.04 LTS(x64) and Ubuntu16.04 LTS(x64)  
 必須ライブラリ(Required Library):libattr1-dev,libbsd-dev,libacl1-dev,libgl1-mesa-dev  
 
-いずれの環境でもコンパイルにはQt5.4.1以降とQtCreatorが必要です。 
+いずれの環境でもコンパイルにはQt5.6とQtCreatorが必要です。 
 環境によってはg++などのインストールが必要かもしれません。  
 QtCreatorを起動して、rapidcopy_main.proを読み込んでください。
+Qtのダウンロードは以下のURLから行えます。
 
-Qt Library(5.4.1 or above) and QtCreator are necessary to make.
+Qt Library(5.6) and QtCreator are necessary to make.
 You might need to be installed other library, such as g++,depending on your environment.  
 Start up QtCreator and read project file "rapidcopy_main.pro"
+Qt Framework can download here.
+https://www.qt.io/
 
 デフォルトではubuntuをターゲットとしています。  
 CentOS7でコンパイルする場合はrapidcopy_main.proのLIBS行を変更してください。  
