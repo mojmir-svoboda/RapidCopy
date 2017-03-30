@@ -24,7 +24,7 @@ static char admin_str[32];
 
 void SetVersionStr(BOOL is_admin)
 {
-    char *versionstr = "1.1.1";
+    char *versionstr = "1.2.3";
     sprintf(version_str,"v%s",versionstr);
 }
 

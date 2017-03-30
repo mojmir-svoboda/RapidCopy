@@ -592,6 +592,9 @@ protected:
     //FastCopy::Suspend,FastCopy::Resume相当実装用の排他
     QMutex	suspend_Mutex;
 
+    //for QRegExp mutex
+    QMutex  regexp_Mutex;
+
     //時間情報
     DWORD	startTick;
     DWORD	endTick;

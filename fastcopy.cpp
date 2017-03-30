@@ -1087,11 +1087,17 @@ BOOL FastCopy::FilterCheck(const void *path, const void *fname, DWORD attr, _int
     if((filterMode & REG_FILTER) == 0)
         return	TRUE;
 
-    if(regExp[EXC_EXP][targ].IsMatch(fname))
+    regexp_Mutex.lock();
+    if(regExp[EXC_EXP][targ].IsMatch(fname)){
+        regexp_Mutex.unlock();
         return	FALSE;
+    }
 
-    if(regExp[INC_EXP][targ].IsMatch(fname))
+    if(regExp[INC_EXP][targ].IsMatch(fname)){
+        regexp_Mutex.unlock();
         return	TRUE;
+    }
+    regexp_Mutex.unlock();
 
     return FALSE;
 }
@@ -1183,8 +1189,8 @@ BOOL FastCopy::PreSearchProc(void *path, int prefix_len, int dir_len)
                         && !FilterCheck(path,
                                         namelist[i]->d_name,
                                         fdat.st_mode,
-                                        fdat.st_mtim.tv_sec,
                                         fdat.st_size,
+                                        fdat.st_mtim.tv_sec,
                                         //fdat.st_mtimespec.tv_sec,
                                         FASTCOPY_FILTER_FLAGS_STAT)){
             continue;
@@ -2498,7 +2504,6 @@ BOOL FastCopy::ReadDirEntry(int dir_len, BOOL confirm_dir)
         //失敗なら加算してリターン
         //課題：これ、エラー時にファイルなんだかディレクトリなんだか判別つかないなあ。
         //とりあえずファイルってことにしとくか。
-        ret = false;
         total.errFiles++;
         ConfirmErr("ReadDirEntry:(l)stat", MakeAddr(src, srcPrefixLen),CEF_NORMAL);
         goto end;
@@ -3351,6 +3356,9 @@ BOOL FastCopy::ReadFileProc(int start_idx, int *end_idx, int dir_len)
             stat->SetFileSize(0);
 
             ConfirmErr("ReadFileProc:open()",(MakeAddr(RestoreOpenFilePath(src, start_idx, dir_len), srcPrefixLen)),CEF_NORMAL);
+            if(is_send_request && command == WRITE_BACKUP_FILE){
+                SendRequest(WRITE_BACKUP_END,0,0);
+            }
             ret = false;
             goto END;
         }
@@ -3851,9 +3859,9 @@ BOOL FastCopy::DeleteProc(void *path, int dir_len,bool isfirst)
         //とりあえずファイルってことにしとくか。unixではディレクトリもファイルって言えなくもないし！
         ret = false;
         total.errFiles++;
-        ERRNO_OUT(errno,"DeleteProc:lstat()");
-        ConfirmErr("DeleteProc:(l)stat", MakeAddr(dst,dstPrefixLen),CEF_STOP);
-        goto end;
+        //ERRNO_OUT(errno,"DeleteProc:lstat()");
+        ConfirmErr("DeleteProc:(l)stat", MakeAddr(dst,dstPrefixLen),CEF_DIRECTORY);
+        return ret;
     }
     if(IsFile(fdat.st_mode) || IsSlnk(fdat.st_mode)){
         //正規化済みのパスをパスとファイル名に分離
@@ -4907,8 +4915,8 @@ BOOL FastCopy::WDigestThreadCore(void)
                 }
                 else{
                     QString str;
-                    QByteArray dstdigest((char*)calc->digest,dstDigest.GetDigestSize());
-                    QByteArray srcdigest((char*)digest,dstDigest.GetDigestSize());
+                    QByteArray srcdigest((char*)calc->digest,dstDigest.GetDigestSize());
+                    QByteArray dstdigest((char*)digest,dstDigest.GetDigestSize());
                     str.append((char*)GetLoadStrV(IDS_VERIFY_ERROR_WARN_1));
                     str.append(srcdigest.toHex());
                     str.append((char*)GetLoadStrV(IDS_VERIFY_ERROR_WARN_2));
@@ -5467,7 +5475,8 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
             }
             //open成功してたらpreallocateで断片化阻止
             if(info.flags_second & FastCopy::ENABLE_PREALLOCATE){
-                posix_fallocate(fh,0,file_size);    //エラー発生時の処理はのちのWriteFileWithReduceに任せる
+                //posix_fallocate(fh,0,file_size);    //エラー発生時の処理はのちのWriteFileWithReduceに任せる
+                fallocate(fh,FALLOC_FL_ZERO_RANGE,0,file_size);
             }
         }
         while (remain > 0) {
@@ -5596,7 +5605,9 @@ END2:
 
         BOOL is_empty_buf = digestList.RemainSize() <= digestList.MinMargin();
         if (is_empty_buf || (info.flags & SERIAL_VERIFY_MOVE))
+            phase = VERIFYING;
             CheckDigests(is_empty_buf ? CD_WAIT : CD_NOWAIT); // empty なら wait
+            phase = COPYING;
     }
 
     if (command == WRITE_BACKUP_FILE) {
@@ -6280,7 +6291,7 @@ void FastCopy::signal_handler(int signum){
         //死ぬ前にせめてセマフォは解放していくぞ！
         sem_post((sem_t*)rapidcopy_semaphore);
         //どうせプロセスダウンなのでsem_close呼ばなくてもいいんだけど念のため
-	sem_close((sem_t*)rapidcopy_semaphore);
+        sem_close((sem_t*)rapidcopy_semaphore);
         //テストでとりあえず呼んでるだけよ。本来はコールしちゃだめよ！
         //qDebug() << "signal on sem_post() called.";
     }

@@ -16,7 +16,7 @@ TRANSLATIONS += RapidCopy_ja_JP.ts
 #if compile on CentOS 7
 #LIBS += /usr/lib64/libacl.so /usr/lib64/libbsd.so
 
-#if compile on ubuntu14.04(default)
+#if compile on Ubuntu14.xx or 16.xx (default)
 LIBS += /usr/lib/libacl.so /usr/lib/x86_64-linux-gnu/libbsd.so
 
 SOURCES += main.cpp \
