@@ -1,12 +1,14 @@
 # RapidCopy for GNU/Linux
 
+![RapidCopy for Linux](https://github.com/KengoSawa2/RapidCopy/blob/master/SS/RapidCopy_Linux.png "RapidCopy for Linux")
+
 #### 概要(About)
 
 Windows系最速(?) のファイルコピー＆削除ツールFastCopy v2.11のGNU/Linux移植 独自発展版です。  
 RapidCopy is portable version of FastCopy(v2.11) that runs GNU/Linux.  
 
-Linux版はFastCopyv2.11のMac移植版である[RapidCopy]v1.1.0をベースとして作成されています。  
-Linux ver is made of RapidCopy(for Mac)v1.1.0  
+Linux版はFastCopy v2.11のMac移植版である[RapidCopy for Mac]をベースとして作成されています。  
+Linux ver was ported from RapidCopy for Mac  
 
 #### ライセンス(License)
 全ソースを二条項BSDライセンスで公開しています。  
@@ -26,7 +28,7 @@ We checked next Linux distribution.
 OS:CentOS7.1(x64)  
 必須ライブラリ(Required Library):libacl,libbsd,libattr  
 
-OS:Ubuntu14.04 LTS(x64)  
+OS:Ubuntu14.04 LTS(x64) and Ubuntu16.04 LTS(x64)  
 必須ライブラリ(Required Library):libattr1-dev,libbsd-dev,libacl1-dev,libgl1-mesa-dev  
 
 いずれの環境でもコンパイルにはQt5.4.1以降とQtCreatorが必要です。 
@@ -37,10 +39,10 @@ Qt Library(5.4.1 or above) and QtCreator are necessary to make.
 You might need to be installed other library, such as g++,depending on your environment.  
 Start up QtCreator and read project file "rapidcopy_main.pro"
 
-デフォルトではubuntu14.04をターゲットとしています。  
+デフォルトではubuntuをターゲットとしています。  
 CentOS7でコンパイルする場合はrapidcopy_main.proのLIBS行を変更してください。  
-Default target is ubuntu 14.04(LTS)  
-Please change the LIBS line of rapidcopy_main.pro If you want to compile in CentOS7.  
+Default target is Ubuntu
+Please change the "LIBS" line of rapidcopy_main.pro If you want to compile in CentOS7.  
 
 #### TODO
 - 未使用変数及びインタフェースのリファクタリング,コンパイラ警告潰し,未使用コード整理(code refactoring)
