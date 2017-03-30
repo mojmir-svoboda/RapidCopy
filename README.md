@@ -40,6 +40,7 @@ Qt Library(5.6) and QtCreator are necessary to make.
 You might need to be installed other library, such as g++,depending on your environment.  
 Start up QtCreator and read project file "rapidcopy_main.pro"
 Qt Framework can download here.
+
 https://www.qt.io/
 
 デフォルトではubuntuをターゲットとしています。  
