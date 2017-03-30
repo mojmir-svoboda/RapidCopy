@@ -45,8 +45,8 @@ https://www.qt.io/
 
 デフォルトではubuntuをターゲットとしています。  
 CentOS7でコンパイルする場合はrapidcopy_main.proのLIBS行を変更してください。  
-Default target is Ubuntu
-Please change the "LIBS" line of rapidcopy_main.pro If you want to compile in CentOS7.  
+Default target is Ubuntu.
+If you want to compile in CentOS7. Change the "LIBS" line of rapidcopy_main.pro.
 
 #### TODO
 - 未使用変数及びインタフェースのリファクタリング,コンパイラ警告潰し,未使用コード整理(code refactoring)
