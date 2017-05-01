@@ -5475,8 +5475,11 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
             }
             //open成功してたらpreallocateで断片化阻止
             if(info.flags_second & FastCopy::ENABLE_PREALLOCATE){
-                //posix_fallocate(fh,0,file_size);    //エラー発生時の処理はのちのWriteFileWithReduceに任せる
+#ifdef _CENTOS7                 
+                //posix_fallocate(fh,0,file_size);    //エラー発生時の処理はのちのWriteFileWithReduceに任せる 0fill write嫌なので無発行
+#else
                 fallocate(fh,FALLOC_FL_ZERO_RANGE,0,file_size);
+#endif
             }
         }
         while (remain > 0) {
