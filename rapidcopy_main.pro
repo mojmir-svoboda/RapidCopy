@@ -9,15 +9,24 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
 
 QMAKE_CXXFLAGS += -std=c++11
 
+#CONFIG parameter detail. Default is Ubuntu.
+#If you want to build on CentOS7, Change below.
+#CentOS = CentOS7
+
+#CONFIG += CentOS7
+
 TARGET = RapidCopy
 DEFINES += _GNU_SOURCE
 TRANSLATIONS += RapidCopy_ja_JP.ts
 
-#if compile on CentOS 7
-#LIBS += /usr/lib64/libacl.so /usr/lib64/libbsd.so
-
-#if compile on Ubuntu14.xx or 16.xx (default)
-LIBS += /usr/lib/libacl.so /usr/lib/x86_64-linux-gnu/libbsd.so
+if(CentOS7){
+	LIBS += /usr/lib64/libacl.so /usr/lib64/libbsd.so
+	DEFINES += _CENTOS7
+}
+else{
+	LIBS += /usr/lib/libacl.so /usr/lib/x86_64-linux-gnu/libbsd.so
+	DEFINE += _UBUNTU
+}
 
 SOURCES += main.cpp \
 	mainwindow.cpp \
