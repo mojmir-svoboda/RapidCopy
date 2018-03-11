@@ -192,7 +192,7 @@ struct FileStat {
     DWORD		lastError;			//最後に発生したerrno
     int			renameCount;
     BOOL		isExists;
-    BOOL		isCaseChanged;
+    BOOL		isArchived;     // LTFS,ODAなどのアーカイブで禁則文字変換有無
     int			size;
     int			minSize;		// upperName 分を含めない
     DWORD		hashVal;		// upperName の hash値
@@ -545,7 +545,8 @@ protected:
     // バッファ
     VBuf	mainBuf;		// Read/Write 用 buffer
     VBuf	fileStatBuf;	// src file stat 用 buffer
-    QHash<unsigned long,bool> caseHash; //case-sensitive->no case-sensitiveコピー判定用ハッシュ
+    QHash <unsigned long,bool> caseHash; //case-sensitive->no case-sensitiveコピー判定用ハッシュ
+    QHash <QString,bool> archiveHash;//LTFS,ODAモード自動置換後の重複チェック用ハッシュ
     VBuf	dirStatBuf;		// src dir stat 用 buffer
     VBuf	dstStatBuf;		// dst dir/file stat 用 buffer
     VBuf	dstStatIdxBuf;	// dstStatBuf 内 entry の index sort 用
@@ -631,6 +632,8 @@ protected:
     DataList		moveList;		// 移動
     DataList::Head	*moveFinPtr;	// 書き込み終了ID位置
     TLinkHashTbl	hardLinkList;	// ハードリンク用リスト
+
+    QStringList ltfs_prohibitlist;
 
     BOOL ReadThreadCore(void);
     BOOL DeleteThreadCore(void);
@@ -738,12 +741,14 @@ protected:
         return *(char *)name == '.' && (*(char *)name)+1 != '\0';
     }
 
-    int FdatToFileStat(struct stat *fdat, FileStat *stat, BOOL is_usehash,char *f_name);
+    int FdatToFileStat(struct stat *fdat, FileStat *stat, BOOL is_usehash,char *f_name,bool isSrcstat=true);
     Confirm::Result ConfirmErr(const char *message, const void *path=NULL, DWORD flags=0,const char *count_message=NULL,char *count_message2=NULL);
     BOOL ConvertExternalPath(const void *path, void *buf, int buf_len);
     void apath_to_path_file_a(char *path,char *dir,char *file);
     BOOL Wait(DWORD tick=0);
     BOOL WriteFileBackupAclLocal(int fh,ReqHeader *writereq);
+    bool Convert_Prohibitchar_Archive(char *orgdst,BOOL req_replace);
+    bool Check_Prohibitchar_Archive(char *name,char *fullpath);
 };
 
 //RapidCopyで実行される各種スレッドクラス
