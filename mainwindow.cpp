@@ -1781,6 +1781,8 @@ BOOL MainWindow::ExecCopy(DWORD exec_flags)
             break;
     }
 
+    //qDebug("line = %d flags = %x",__LINE__,info.flags);
+
     //mainBufの最大値チェック。とりあえず2GB。
     if(ui->lineEdit_BUFF->text().toInt() >= MAX_MAINBUF_MB){
         info.bufSize = (unsigned int)MAX_MAINBUF;
@@ -4016,9 +4018,9 @@ BOOL MainWindow::SetInfo(BOOL is_finish_status)
     if(ti.total.isPreSearch){
         len += sprintf(buf + len,
             " ---- Estimating ... ----\n"
-            "PreTrans = %.1fMB\nPreFiles  = %d (%d)\n"
+            "PreTrans = %.2fGiB\nPreFiles  = %d (%d)\n"
             "PreTime  = %.2fsec\nPreRate  = %.2ffiles/s",
-            (double)ti.total.preTrans / (1024 * 1024),
+            (double)ti.total.preTrans / (1024 * 1024 * 1024),
             ti.total.preFiles, ti.total.preDirs,
             (double)ti.tickCount / 1000,
             (double)ti.total.preFiles * 1000 / ti.tickCount);
@@ -4026,20 +4028,20 @@ BOOL MainWindow::SetInfo(BOOL is_finish_status)
     else if(info.mode == FastCopy::DELETE_MODE){
         len += sprintf(buf + len,
             IsListing() ?
-            "TotalDel   = %.1f MB\n"
+            "TotalDel   = %.2f GiB\n"
             "DelFiles   = %d (%d)\n"
             "TotalTime = %02d:%02d:%02d\n" :
             (info.flags & (FastCopy::OVERWRITE_DELETE|FastCopy::OVERWRITE_DELETE_NSA)) ?
-            "TotalDel   = %.1f MB\n"
+            "TotalDel   = %.2f GiB\n"
             "DelFiles   = %d (%d)\n"
             "TotalTime = %02d:%02d:%02d\n"
             "FileRate   = %.2f files/s\n"
-            "OverWrite = %.1f MB/s" :
-            "TotalDel   = %.1f MB\n"
+            "OverWrite = %.1f MiB/s" :
+            "TotalDel   = %.2f GiB\n"
             "DelFiles   = %d (%d)\n"
             "TotalTime = %02d:%02d:%02d\n"
             "FileRate   = %.2f files/s",
-            (double)ti.total.deleteTrans / (1024 * 1024),
+            (double)ti.total.deleteTrans / (1024 * 1024 * 1024),
             ti.total.deleteFiles, ti.total.deleteDirs,
             ti.tickCount / 1000 / 3600,
             ((ti.tickCount / 1000) % 3600) / 60,
@@ -4056,11 +4058,11 @@ BOOL MainWindow::SetInfo(BOOL is_finish_status)
             if(!IsVerifyListing()){
                 len += sprintf(buf + len,
                     (info.flags & FastCopy::RESTORE_HARDLINK) ?
-                    "TotalSize = %.1f MB\n"
+                    "TotalSize = %.2f GiB\n"
                     "TotalFiles = %d/%d (%d)\n" :
-                    "TotalSize = %.1f MB\n"
+                    "TotalSize = %.2f GiB\n"
                     "TotalFiles = %d (%d)\n"
-                    , (double)ti.total.writeTrans / (1024 * 1024)
+                    , (double)ti.total.writeTrans / (1024 * 1024 * 1024)
                     , ti.total.writeFiles
                     , (info.flags & FastCopy::RESTORE_HARDLINK) ?
                       ti.total.linkFiles :
@@ -4071,14 +4073,14 @@ BOOL MainWindow::SetInfo(BOOL is_finish_status)
         else{
             len += sprintf(buf + len,
                 (info.flags & FastCopy::RESTORE_HARDLINK) ?
-                "TotalRead = %.1f MB\n"
-                "TotalWrite = %.1f MB\n"
+                "TotalRead = %.2f GiB\n"
+                "TotalWrite = %.2f GiB\n"
                 "TotalFiles = %d/%d (%d)\n" :
-                "TotalRead = %.1f MB\n"
-                "TotalWrite = %.1f MB\n"
+                "TotalRead = %.2f GiB\n"
+                "TotalWrite = %.2f GiB\n"
                 "TotalFiles = %d (%d)\n"
-                , (double)ti.total.readTrans / (1024 * 1024)
-                , (double)ti.total.writeTrans / (1024 * 1024)
+                , (double)ti.total.readTrans / (1024 * 1024 * 1024)
+                , (double)ti.total.writeTrans / (1024 * 1024 * 1024)
                 , ti.total.writeFiles
                 , (info.flags & FastCopy::RESTORE_HARDLINK) ?
                   ti.total.linkFiles :
@@ -4090,34 +4092,34 @@ BOOL MainWindow::SetInfo(BOOL is_finish_status)
         //if (ti.total.skipFiles || ti.total.skipDirs) {
         if(!IsVerifyListing() && (ti.total.skipFiles || ti.total.skipDirs)){
             len += sprintf(buf + len,
-                "TotalSkip = %.1f MB\n"
+                "TotalSkip = %.2f GiB\n"
                 "SkipFiles = %d (%d)\n"
-                , (double)ti.total.skipTrans / (1024 * 1024)
+                , (double)ti.total.skipTrans / (1024 * 1024 * 1024)
                 , ti.total.skipFiles, ti.total.skipDirs);
         }
         if(ti.total.deleteFiles || ti.total.deleteDirs){
             len += sprintf(buf + len,
-                "TotalDel  = %.1f MB\n"
+                "TotalDel  = %.2f GiB\n"
                 "DelFiles  = %d (%d)\n"
-                , (double)ti.total.deleteTrans / (1024 * 1024)
+                , (double)ti.total.deleteTrans / (1024 * 1024 * 1024)
                 , ti.total.deleteFiles, ti.total.deleteDirs);
         }
 
         len += sprintf(buf + len, IsListing() ?
             "TotalTime = %02d:%02d:%02d\n" :
             "TotalTime = %02d:%02d:%02d\n"
-            "TransRate = %.2f MB/s\n"
+            "TotalTransRate = %lld MiB/s\n"
             "FileRate  = %.2f files/s"
             , ti.tickCount / 1000 / 3600
             , ((ti.tickCount / 1000) % 3600) / 60
             , ((ti.tickCount / 1000) % 60)
-            , (double)ti.total.writeTrans / ti.tickCount / 1024 * 1000 / 1024
+            , (_int64)ti.total.writeTrans / ti.tickCount / 1024 * 1024 / 1024
             , (double)ti.total.writeFiles * 1000 / ti.tickCount);
 
         if (info.flags & FastCopy::VERIFY_FILE) {
             len += sprintf(buf + len,
-                "\nVerifyRead= %.1f MB\nVerifyFiles= %d"
-                , (double)ti.total.verifyTrans / (1024 * 1024)
+                "\nVerifyRead= %.2f Gib\nVerifyFiles= %d"
+                , (double)ti.total.verifyTrans / (1024 * 1024 * 1024)
                 , ti.total.verifyFiles);
         }
     }

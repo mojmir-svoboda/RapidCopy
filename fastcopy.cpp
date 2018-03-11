@@ -123,6 +123,9 @@ FastCopy::FastCopy()
     mainThread_pt = QThread::currentThreadId();
     //実行フェーズを「実行前」に変更
     phase = NORUNNING;
+
+    ltfs_prohibitlist << LTFS_PROHIBIT_SLASH;
+    ltfs_prohibitlist << LTFS_PROHIBIT_COLON;
 }
 
 FastCopy::~FastCopy()
@@ -1665,6 +1668,9 @@ BOOL FastCopy::ReadProc(int dir_len, BOOL confirm_dir)
     BOOL		confirm_dir_local = confirm_dir || is_rename_local;
 
     isRename = FALSE;	// top level のみ効果を出す
+    //v125 LTFS,ODAの禁則文字置き換えワーク
+    char		wk_filename[MAX_PATH];
+    unsigned long wk_hashVal;
 
     if(waitTick) Wait(1);
 
@@ -1688,7 +1694,24 @@ BOOL FastCopy::ReadProc(int dir_len, BOOL confirm_dir)
     for(srcStat = (FileStat *)fileStatBuf.Buf(); srcStat < statEnd;
             srcStat = (FileStat *)((BYTE *)srcStat + srcStat->size)) {
         if(confirm_dir_local){
-            dstStat = hash.Search(srcStat->upperName, srcStat->hashVal);
+            if(srcStat->isArchived){
+                strncpy(wk_filename,(char*)srcStat->upperName,strlen((char*)srcStat->upperName) + 1);
+                Convert_Prohibitchar_Archive(wk_filename,true);
+                //srcStatのhashVal再計算いるのう。。
+                wk_hashVal = MakeHash(wk_filename,strlen((char*)srcStat->upperName) + 1);
+                dstStat = hash.Search(wk_filename,wk_hashVal);
+                //かぶるファイル名がいるので強引に書き換える
+                if(dstStat){
+                    //upperNameじゃダメだからcFileNameでやり直し
+                    strncpy(wk_filename,(char*)srcStat->cFileName,strlen((char*)srcStat->cFileName) + 1);
+                    Convert_Prohibitchar_Archive(wk_filename,true);
+                    strncpy((char*)dstStat->cFileName,wk_filename,strlen(wk_filename) + 1);
+                    dstStat->hashVal = wk_hashVal;
+                }
+            }
+            else{
+                dstStat = hash.Search(srcStat->upperName, srcStat->hashVal);
+            }
         }
         int		path_len = 0;
         srcStat->fileID = nextFileID++;
@@ -1711,7 +1734,12 @@ BOOL FastCopy::ReadProc(int dir_len, BOOL confirm_dir)
                     || (info.flags & FILE_REPARSE))) {
 /* 比較モード */
                     if (isListingOnly && (info.flags & VERIFY_FILE)) {
-                        strcpyV(MakeAddr(confirmDst, confirm_len), srcStat->cFileName);
+                        if(srcStat->isArchived){
+                            strcpyV(MakeAddr(confirmDst, confirm_len), dstStat->cFileName);
+                        }
+                        else{
+                            strcpyV(MakeAddr(confirmDst, confirm_len), srcStat->cFileName);
+                        }
                         strcpyV(MakeAddr(src, dir_len), srcStat->cFileName);
                         CheckSuspend();
                         if (!IsSameContents(srcStat, dstStat) && !isAbort) {
@@ -1761,6 +1789,25 @@ BOOL FastCopy::ReadProc(int dir_len, BOOL confirm_dir)
     if(confirm_dir_local){
         for(srcStat = (FileStat *)(dirStatBuf.Buf() + curDirStatSize); srcStat < statEnd;
                 srcStat = (FileStat *)((BYTE *)srcStat + srcStat->size)){
+
+            if(srcStat->isArchived){
+                strncpy(wk_filename,(char*)srcStat->upperName,strlen((char*)srcStat->upperName) + 1);
+                Convert_Prohibitchar_Archive(wk_filename,true);
+                //srcStatのhashVal再計算いるのう。。
+                wk_hashVal = MakeHash(wk_filename,strlen((char*)srcStat->upperName) + 1);
+                //qDebug() << "ReadProc(dir):" << wk_filename << "hashval=" << wk_hashVal;
+                dstStat = hash.Search(wk_filename,wk_hashVal);
+
+                //かぶるファイル名がいるので強引に書き換える
+                if(dstStat){
+                    //upperNameじゃダメだからcFileNameでやり直し
+                    strncpy(wk_filename,(char*)srcStat->cFileName,strlen((char*)srcStat->cFileName) + 1);
+                    Convert_Prohibitchar_Archive(wk_filename,true);
+                    strncpy((char*)dstStat->cFileName,wk_filename,strlen(wk_filename) + 1);
+                    dstStat->hashVal = wk_hashVal;
+                }
+            }
+            //LTFSじゃない場合ね
 
             if((dstStat = hash.Search(srcStat->upperName, srcStat->hashVal)) != NULL){
                 //srcStat->isCaseChanged = strcmpV(srcStat->cFileName, dstStat->cFileName);
@@ -1841,8 +1888,17 @@ BOOL FastCopy::ReadProc(int dir_len, BOOL confirm_dir)
         new_dir_len = dir_len + sprintfV(MakeAddr(src, dir_len), FMT_STR_V, srcStat->cFileName);
         srcStat->fileID = nextFileID++;
 
-        if (confirm_dir && srcStat->isExists)
-            sprintfV(MakeAddr(confirmDst, confirm_len), FMT_CAT_ASTER_V, srcStat->cFileName);
+        if (confirm_dir && srcStat->isExists){
+
+            if(srcStat->isArchived){
+                strncpy(wk_filename,(char*)srcStat->cFileName,strlen((char*)srcStat->cFileName) + 1);
+                Convert_Prohibitchar_Archive(wk_filename,true);
+                sprintfV(MakeAddr(confirmDst, confirm_len), FMT_CAT_ASTER_V, wk_filename);
+            }
+            else{
+                sprintfV(MakeAddr(confirmDst, confirm_len), FMT_CAT_ASTER_V, srcStat->cFileName);
+            }
+        }
 
         if (!isListingOnly) {
             //ディレクトリへのシンボリックリンクskip確定してないか最初にチェック
@@ -2490,6 +2546,11 @@ BOOL FastCopy::ReadDirEntry(int dir_len, BOOL confirm_dir)
         caseHash.clear();
     }
 
+    if(info.flags_second & LTFS_MODE){
+        //禁則文字自動置換後のファイル名/フォルダ名格納ハッシュ
+        archiveHash.clear();
+    }
+
     //リンクは実体としてコピー？
     if(info.flags & DIR_REPARSE || info.flags & FILE_REPARSE){
         wk_rtn = stat((const char*)src,&fdat);
@@ -2688,6 +2749,18 @@ BOOL FastCopy::ReadDirEntry(int dir_len, BOOL confirm_dir)
             continue;
         }
         // ディレクトリ＆ファイル情報の蓄積
+        if(info.flags_second & LTFS_MODE){
+            //エラー処理は中にお任せ
+            if(!Check_Prohibitchar_Archive(namelist[i]->d_name,wk_fullpath)){
+                if(IsDir(fdat.st_mode)){
+                    total.errDirs++;
+                }
+                else{
+                    total.errFiles++;
+                }
+                break;
+            }
+        }
         if (IsDir(fdat.st_mode)) {
             //ディレクトリやな
             len = FdatToFileStat(&fdat, (FileStat *)(dirStatBuf.Buf() + dirStatBuf.UsedSize()),
@@ -3622,7 +3695,7 @@ BOOL FastCopy::ReadDstStat(void)
                 goto END;
             }
             dstStatIdx[num++] = dstStat;
-            len = FdatToFileStat(&fdat, (FileStat *)dstStat,TRUE,wk_filename);
+            len = FdatToFileStat(&fdat, (FileStat *)dstStat,TRUE,wk_filename,false);
             dstStatBuf.AddUsedSize(len);
             dstStatIdxBuf.AddUsedSize(sizeof(FileStat *));
             if (dstStatBuf.RemainSize() <= maxStatSize && !dstStatBuf.Grow(MIN_ATTR_BUF)) {
@@ -3641,7 +3714,7 @@ BOOL FastCopy::ReadDstStat(void)
             /* FindFirstFileはdir単体を指定すると中のファイルエントリを調査せずにdirエントリだけ返す謎仕様 */
             /* FindFirstFileの挙動エミュレートのために、dir情報だけ登録してリターンしちゃうぞ */
             dstStatIdx[num++] = dstStat;
-            len = FdatToFileStat(&fdat, (FileStat *)dstStat,TRUE,wk_filename);
+            len = FdatToFileStat(&fdat, (FileStat *)dstStat,TRUE,wk_filename,false);
             dstStatBuf.AddUsedSize(len);
             dstStatIdxBuf.AddUsedSize(sizeof(FileStat *));
 
@@ -3717,7 +3790,7 @@ BOOL FastCopy::ReadDstStat(void)
         //事前調査対象として適切なファイルかどうか判定。
         if(IsFile(fdat.st_mode) || IsDir(fdat.st_mode) || IsSlnk(fdat.st_mode)){
             dstStatIdx[num++] = dstStat;
-            len = FdatToFileStat(&fdat, dstStat, TRUE,&namelist[i]->d_name[0]);
+            len = FdatToFileStat(&fdat, dstStat, TRUE,&namelist[i]->d_name[0],false);
             dstStatBuf.AddUsedSize(len);
 
             // 次の stat 用 buffer のセット
@@ -4396,6 +4469,13 @@ BOOL FastCopy::WriteProc(int dir_len)
                     total.linkFiles++;
                 }
                 else {
+                    //v145 archive属性の場合はdstを自動置換
+                    if(writeReq->stat.isArchived){
+                        Convert_Prohibitchar_Archive((char*)dst,true);
+                        if(info.flags_second & LTFS_MODE){
+                            ConfirmErr((char*)GetLoadStrV(IDS_LTFS_REPLACE_WARN),(char*)dst,CEF_NOAPI);
+                        }
+                    }
                     //verifyモード時は、dstに存在しないファイルがあったらエラーとする
                     if(info.mode == VERIFY_MODE){
                         //エラー要因を確認
@@ -4562,6 +4642,13 @@ BOOL FastCopy::WriteDirProc(int dir_len)
         if (is_reparse || (info.flags & SKIP_EMPTYDIR) == 0) {
             if(mkdirQueueBuf.UsedSize()){
                 ExecDirQueue();
+            }
+            if(sv_stat.isArchived){
+                //dst中の禁則フォルダ名書き換える
+                Convert_Prohibitchar_Archive((char*)dst,true);
+                if(info.flags_second & LTFS_MODE){
+                    ConfirmErr((char*)GetLoadStrV(IDS_LTFS_REPLACE_WARN),(char*)dst,CEF_NOAPI);
+                }
             }
             if(isListingOnly || !mkdir((const char*)dst, 0777)){
                 if(isListing && !is_reparse){
@@ -5431,6 +5518,14 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
     else {
         //xattr延長の再帰でWriteFileProcが呼ばれてない？(最初のファイル実体writeか？)
         if(fh == SYSCALL_ERR){
+            if(stat->isArchived){
+                if(Convert_Prohibitchar_Archive((char*)dst,true)){
+                    //禁則文字列変換あった？
+                    if(info.flags_second & LTFS_MODE){
+                        ConfirmErr((char*)GetLoadStrV(IDS_LTFS_REPLACE_WARN),(char*)dst,CEF_NOAPI);
+                    }
+                }
+            }
             //書き込み対象のファイルハンドルをopen
 
             //LTFSへの書き込みで禁則文字の":"や"/"を発見した場合は
@@ -5607,10 +5702,12 @@ END2:
         memcpy(obj->path, dst, path_size);
 
         BOOL is_empty_buf = digestList.RemainSize() <= digestList.MinMargin();
-        if (is_empty_buf || (info.flags & SERIAL_VERIFY_MOVE))
+        //v127
+        if (is_empty_buf || (info.flags & SERIAL_VERIFY_MOVE)){
             phase = VERIFYING;
             CheckDigests(is_empty_buf ? CD_WAIT : CD_NOWAIT); // empty なら wait
             phase = COPYING;
+        }
     }
 
     if (command == WRITE_BACKUP_FILE) {
@@ -5823,6 +5920,65 @@ BOOL FastCopy::WriteFileBackupAclLocal(int fh,ReqHeader *writereq)
             ConfirmErr("WriteFileBackupAclLocal:acl_free",MakeAddr(dst,dstPrefixLen),CEF_NORMAL);
         }
     }
+    return(ret);
+}
+
+bool FastCopy::Convert_Prohibitchar_Archive(char *orgdst,bool req_replace){
+
+    QString dst_wk(orgdst);
+    bool isexists = false;
+
+    if(info.flags_second & LTFS_MODE){
+        for(int i=0; i < ltfs_prohibitlist.length();i++){
+            if(dst_wk.contains(ltfs_prohibitlist[i])){
+                isexists = true;
+                if(req_replace){
+                    dst_wk.replace(ltfs_prohibitlist[i],LTFS_CONVERTED_AFTER);
+                }
+            }
+        }
+    }
+    if(req_replace && isexists){
+        //Warning出力
+        //ConfirmErr((char*)GetLoadStrV(IDS_LTFS_REPLACE_WARN),dst_wk.toLocal8Bit().data(),CEF_NOAPI);
+        strcpy(orgdst,dst_wk.toLocal8Bit().data());
+    }
+    return isexists;
+}
+
+bool FastCopy::Check_Prohibitchar_Archive(char* name,char* fullpath){
+
+    QString namewk(name);
+    bool ret = true;		//true = 変換結果に問題なしorそも変換してない
+                            //false = 変換結果がかぶるよ
+
+    if(info.flags_second & LTFS_MODE){
+        for(int i=0; i < ltfs_prohibitlist.length();i++){
+            if(namewk.contains(ltfs_prohibitlist[i])){
+                namewk.replace(ltfs_prohibitlist[i],LTFS_CONVERTED_AFTER);
+            }
+        }
+    }
+    //当該フォルダ内で変換結果後の名前または元々の_つきの名前が重複する？
+    if(archiveHash.value(namewk) == true){
+
+        //重複する場合は強制停止とする。理由は以下。
+        //scandir()ソートした結果で先にハッシュに入った方がコピー対象に送られると、
+        //dstの中身は"どっち"と比較されるのが正しかったのかは判断できない。
+        //安全のためにリネームを促して強制停止。
+        if(info.flags_second & LTFS_MODE){
+            ConfirmErr((char*)GetLoadStrV(IDS_LTFS_REPLACE_CHECK_ERR),
+                        fullpath,CEF_NOAPI|CEF_STOP);
+        }
+        ret = false;
+    }
+    else{
+        //まだ誰もいないのでキーとして入れておこっと
+        archiveHash[namewk] = true;
+        ret = true;
+    }
+    //qDebug() << archiveHash;
+    // else 内部矛盾
     return(ret);
 }
 
@@ -6301,7 +6457,7 @@ void FastCopy::signal_handler(int signum){
     abort();
 }
 
-int FastCopy::FdatToFileStat(struct stat *fdat, FileStat *stat, BOOL is_usehash,char* f_name)
+int FastCopy::FdatToFileStat(struct stat *fdat, FileStat *stat, BOOL is_usehash,char* f_name,bool isSrcstat)
 {
 
     stat->fileID = 0;
@@ -6335,7 +6491,7 @@ int FastCopy::FdatToFileStat(struct stat *fdat, FileStat *stat, BOOL is_usehash,
     stat->hFile				= SYSCALL_ERR;		//file descripter
     stat->lastError			= 0;
     stat->isExists			= FALSE;
-    stat->isCaseChanged		= FALSE;
+    stat->isArchived		= FALSE;
     stat->renameCount		= 0;
     stat->acl				= NULL;
     stat->aclSize			= 0;
@@ -6367,6 +6523,14 @@ int FastCopy::FdatToFileStat(struct stat *fdat, FileStat *stat, BOOL is_usehash,
     //4バイトを超えてぶっこんだ分も込みでサイズ長を設定
     //FilestatのcFileNameまでのサイズ + CFileNameから始まる、ぶっこんだ分のサイズ
     //が入ってるよ。ちなみにLL含むサイズなので、頭からLL分足せばnextレコードになるよ。
+
+    if(isSrcstat && (info.flags_second & LTFS_MODE)){
+        if(Convert_Prohibitchar_Archive((char*)stat->cFileName,false)){
+            //書き込み時には変換後名称
+            stat->isArchived = true;
+        }
+    }
+
     stat->size = len + offsetof(FileStat, cFileName);
     stat->minSize = ALIGN_SIZE(stat->size, 8);
 

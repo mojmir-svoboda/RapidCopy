@@ -53,7 +53,7 @@ static StringTable msgtxt [] = {
     {IDS_MOVECONFIRM,				QObject::tr("Moving")},
     {IDS_SHELLEXT_MODIFY,			QObject::tr("Update")},
     {IDS_SHELLEXT_EXEC,				QObject::tr("Install")},
-    {IDS_FASTCOPYURL,				QObject::tr("http://www.lespace.co.jp/file_bl/rapidcopy/manual/")},
+    {IDS_FASTCOPYURL,				QObject::tr("https://github.com/KengoSawa2/RapidCopy")},
     {IDS_FASTCOPYHELP,				QObject::tr("fastcopy.chm::/fastcopy_eng.htm")},
     {IDS_EXCEPTIONLOG,				QObject::tr("Exception occured.\nException info saved to \n%s\n\nPlease send this file to author.")},
     {IDS_SYNCCONFIRM,				QObject::tr("Synchronizing")},
@@ -112,7 +112,7 @@ static StringTable msgtxt [] = {
     {IDS_STATUS_DELETING,			QObject::tr("Deleting")},
     {IDS_XYARG_NOTFOUND,			QObject::tr("Illegal option: --xpos and --ypos must be specified at the same time.\n")},
     {IDS_CLIMODE_PROHIBIT,			QObject::tr("CLI mode is not Supported.")},
-    {IDS_FASTCOPYURL_EN,			QObject::tr("http://www.lespace.co.jp/file_bl/rapidcopy/manual/index_en.html")},
+    {IDS_FASTCOPYURL_EN,			QObject::tr("https://github.com/KengoSawa2/RapidCopy")},
     //blank 115<->118
     {IDS_CMDCSVNOTFOUND,			QObject::tr("Illegal option: ""--csv""")},
     {IDS_FACMD_ALWAYS,				QObject::tr("error/no error")},
@@ -267,7 +267,8 @@ static StringTable msgtxt [] = {
     {IDS_JOBLIST_DELETEREQ,			QObject::tr("JobList will delete. Are you ok?")},
     {IDS_JOB_DELETEALLREQ,			QObject::tr("All Job will delete. Are you ok?")},
     {IDS_JOB_CHANGEDNOTIFY,			QObject::tr("job changed detected. If you want save(overwrite), press Option+S")},
-    // 1254<->blank
+    {IDS_LTFS_REPLACE_CHECK_ERR,    QObject::tr("LTFS prohibit character duplication detected. You should change source file/folder name.")},
+    // 1255->blank
     // 1300<->1400 ツールチップテキスト用
     {TOOLTIP_TXTEDIT_SRC,			QObject::tr("Enter Copy source files and folders in the Source button or drag-and-drop.")},
     {TOOLTIP_TXTEDIT_DST,			QObject::tr("Enter Copy Destination folder in the DestDir button or drag-and-drop.\nPut '/' at the end, create a folder of the source folder name to the destination.\nDon't put a '/' at the end, copy the data directly below the source folder to the destination.")},
