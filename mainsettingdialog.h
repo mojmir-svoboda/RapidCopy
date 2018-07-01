@@ -48,6 +48,8 @@ private slots:
 
     void on_slider_Speed_valueChanged(int value);
     void on_checkBox_Filelog_stateChanged(int arg1);
+    void on_lineEdit_Iomax_textChanged(const QString &arg1);
+    void on_lineEdit_aionum_textChanged(const QString &arg1);
 };
 
 #endif // MAINSETTINGDIALOG_H

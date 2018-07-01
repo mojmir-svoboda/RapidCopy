@@ -127,6 +127,7 @@ static StringTable msgtxt [] = {
     {IDS_VERIFY_ERROR_WARN_3,		QObject::tr("\nIt might have also destruction occurred in other files.\nCheck the file contents of dst, Recommend ""overwrite"" re-run.\nPlease make sure there is no problem in following.\nDisk devices,FileSystems,drivers,cables....")},
     {IDS_MOVEDIR_FAILED,			QObject::tr("rmdir(move)failed:Check write failed file or hidden file exists.")},
     {IDS_NEWWINDOW_FAILED,			QObject::tr("""Open New Window"" is not possible during the operation of the RapidCopy.")},
+    {IDS_SMALLBUF_ERR,              QObject::tr("Too large or small Main Buffer.\n need %dMB or over and under 2047MB")},
     // blank132<->999
     {IDS_FASTCOPY,					QObject::tr("RapidCopy")},
     {IDS_HIST_CLEAR,		 		QObject::tr("Clear path")},

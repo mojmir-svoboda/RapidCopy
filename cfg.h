@@ -310,6 +310,7 @@ public:
 
     int		bufSize;
     int		maxTransSize;
+    int		maxAionum;
     //bool	enableReadahead;
     int		maxOpenFiles;
     int		maxAttrSize;
@@ -333,6 +334,7 @@ public:
     BOOL	enableAcl;
     BOOL	enableXattr;
     BOOL	enableVerify;
+    BOOL    enableVerifyErrDel;
     BOOL	Dotignore_mode;
     int		usingMD5;
     BOOL	enableNSA;
@@ -352,7 +354,7 @@ public:
     int		infoSpan;	// information update timing (0:250msec, 1:500msec, 2:1000msec)
     BOOL	isTopLevel;
     BOOL	isErrLog;
-    //BOOL	isUtf8Log;
+    BOOL    enableOdirect;
     int		fileLogMode;
 
     BOOL	aclErrLog;

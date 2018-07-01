@@ -1192,7 +1192,7 @@ BOOL MainWindow::EvClicked()
         bool ctrl_pressed;
 
         src_dialog.setFileMode(QFileDialog::Directory);
-        src_dialog.setOption(QFileDialog::DontUseNativeDialog,true);
+        //src_dialog.setOption(QFileDialog::DontUseNativeDialog,true);
 
         //ファイルダイアログでフォルダとファイルを同時選択するためのおまじない。
         QListView *l = src_dialog.findChild<QListView*>("listView");
@@ -1743,6 +1743,12 @@ BOOL MainWindow::ExecCopy(DWORD exec_flags)
         | (diskMode == 0 ? 0 : diskMode == 1 ? FastCopy::FIX_SAMEDISK : FastCopy::FIX_DIFFDISK)
         | (is_verifyonlylisting ? FastCopy::LISTING_ONLY_VERIFY : 0);
 
+    if(!cfg.enableOdirect){
+        info.flags |= FastCopy::USE_OSCACHE_READ;
+        info.flags |= FastCopy::USE_OSCACHE_WRITE;
+        info.flags |= FastCopy::USE_OSCACHE_READVERIFY;
+    }
+
     //第二フラグ
     info.flags_second = cfg.copyFlags | (ui->checkBox_LTFS->isChecked() ? FastCopy::LTFS_MODE : 0)
                                       | (cfg.rwstat ? FastCopy::STAT_MODE : 0)
@@ -1750,7 +1756,10 @@ BOOL MainWindow::ExecCopy(DWORD exec_flags)
                                       | (isCommandStart ? FastCopy::LAUNCH_CLI : 0)
                                       | (cfg.isDisableutime ? FastCopy::DISABLE_UTIME : 0)
 //                                    | (cfg.enableReadahead ? FastCopy::ENABLE_READAHEAD : 0)
-                                      | (fileLogMode & Cfg::ADD_CSVFILELOG ? FastCopy::CSV_FILEOUT : 0);
+                                      | (fileLogMode & Cfg::ADD_CSVFILELOG ? FastCopy::CSV_FILEOUT : 0)
+                                      | (cfg.enableVerifyErrDel ? FastCopy::VERIFYERR_DELETE : 0);
+
+
 
     switch(cfg.usingMD5){
 
@@ -1798,13 +1807,16 @@ BOOL MainWindow::ExecCopy(DWORD exec_flags)
     else{
         info.maxTransSize	= cfg.maxTransSize * 1024 * 1024;
     }
+    info.defTransSize = info.maxTransSize;
 
-    // 対象ファイルシステムごとにI/Oサイズをなんとなく制限する
-    info.maxTransSize = fastCopy.CompensentIO_size(info.maxTransSize,fastCopy.srcFsType,fastCopy.dstFsType);
+    //aioは8以上設定するとresource不足になるので8以上なら強制的に8にする
+    info.maxAionum = cfg.maxAionum > FASTCOPY_LINUX_MAXLIMITAIONUM ? FASTCOPY_LINUX_MAXLIMITAIONUM : cfg.maxAionum;
+    info.defAionum = info.maxAionum;
 
     if(info.flags_second & FastCopy::LTFS_MODE){
         //LTFSモード時はread/write単位は1MB固定に変更
         info.maxTransSize = FASTCOPY_LTFS_MAXTRANSSIZE;
+        info.maxAionum = FASTCOPY_LTFS_MAXAIONUM;
         //xattr付与されてたらオフる。(LTFSではxattrは1エントリしか保存できない)
         info.flags = info.flags &~ FastCopy::WITH_XATTR;
         //ACLも保存できないので強制オフ
@@ -2662,16 +2674,16 @@ BOOL MainWindow::EnableErrLogFile(BOOL on)
 
         // ErrLogFileの生成と書き込みは他プロセスで同時起動しているFastCopyと同時に行っちゃう可能性がある。
         // そのため、OSの名前空間に印とって排他かける。
-        hErrLogMutex = sem_open(FASTCOPYLOG_MUTEX,O_CREAT,S_IRUSR|S_IWUSR,FASTCOPYLOG_MUTEX_INSTANCE);
+        hErrLogMutex = sem_open(FASTCOPYLOG_MUTEX,O_CREAT,S_IRWXU|S_IRWXG|S_IRWXO,FASTCOPYLOG_MUTEX_INSTANCE);
         if(hErrLogMutex == SEM_FAILED){
-            qDebug() << "sem_open(CREATE FASTCOPYLOG_MUTEX) :" << errno;
+            //qDebug() << "sem_open(CREATE FASTCOPYLOG_MUTEX) :" << errno;
         }
         //排他取れるかなー？先に開いてるやついたら無限待ち
         if(sem_wait((sem_t*)hErrLogMutex) == 0){
             hErrLog = open(errLogPathV,O_RDWR | O_CREAT,0777);
         }
         else{
-            qDebug() << "sem_wait() failed. errno=" << errno;
+            //qDebug() << "sem_wait() failed. errno=" << errno;
         }
     }
     else if(!on && hErrLog != SYSCALL_ERR){
@@ -3443,9 +3455,13 @@ void MainWindow::castPath(QPlainTextEdit *target,QString append_path,int append_
 
     int RowHeightpx = ((m.height() * (rowcount + 1)) + 30);	//1は最終行の;ないやつぶん。
                                                             //10はfont以外のQplainTextEditの端っこ部分のなんとなく
-    //横幅を動的に調節・・・・しなくてもいいかもなーとりあえず残してるけど
     //最大高をいい感じに設定
     ui->plainTextEdit_Src->setMaximumHeight(RowHeightpx);
+
+    //src領域末尾にスクロール
+    ui->plainTextEdit_Src->textCursor().movePosition(QTextCursor::End);
+    ui->plainTextEdit_Src->verticalScrollBar()->setValue(ui->plainTextEdit_Src->verticalScrollBar()->maximum());
+    ui->plainTextEdit_Src->horizontalScrollBar()->setValue(ui->plainTextEdit_Src->horizontalScrollBar()->maximum());
 
     //パス追加要求？
     if(append_req){
@@ -5197,6 +5213,7 @@ void MainWindow::dropEvent(QDropEvent *event){
             QFileInfo dstdir(drop_str_list[0].toLocalFile());
             if(dstdir.exists() && dstdir.isDir()){
                 ui->plainTextEdit_Dst->setPlainText(drop_str_list[0].toLocalFile() + "/");
+                ui->plainTextEdit_Dst->horizontalScrollBar()->setValue(ui->plainTextEdit_Dst->horizontalScrollBar()->maximum());
                 CheckJobListmodified();
             }
         }

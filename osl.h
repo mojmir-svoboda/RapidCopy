@@ -62,6 +62,7 @@ bool IsDir2(int d);
 //nanosleep用定数
 #define NANO_SECOND_MULTIPLIER  1000000  // 1 millisecond = 1,000,000 Nanoseconds
 const long INTERVAL_MS = 250 * NANO_SECOND_MULTIPLIER;
+const long INTERVAL_MS_AIO = 500 * NANO_SECOND_MULTIPLIER;
 
 //statfsのf_typeで取得できるファイルシステムタイプdefine
 //usr/include/linux/magic.h以外で認識したいファイルシステムをdefineする。
@@ -73,6 +74,7 @@ const long INTERVAL_MS = 250 * NANO_SECOND_MULTIPLIER;
 #define NTFS_SB_MAGIC     0x5346544e
 #define UDF_SUPER_MAGIC   0x15013346
 #define XFS_SUPER_MAGIC   0x58465342
+#define SMB2_SUPER_MAGIC  0xFE534D42
 
 //Log出力時の文字列
 //RapidCopyが独自に決めてるだけだよ
@@ -91,6 +93,7 @@ const long INTERVAL_MS = 250 * NANO_SECOND_MULTIPLIER;
 #define FSLOGNAME_NFS		"NFS"
 #define FSLOGNAME_REISERFS	"REISERFS"
 #define FSLOGNAME_SMBFS     "SMB"
+#define FSLOGNAME_SMB2FS     "SMB2"
 #define FSLOGNAME_CIFS      "CIFS"
 #define FSLOGNAME_FUSE      "FUSE"
 #define FSLOGNAME_HFS       "HFS"

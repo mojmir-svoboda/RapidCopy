@@ -22,8 +22,10 @@
 #include <sys/sem.h>
 #include <sys/types.h>
 #include <sys/acl.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 #include <linux/magic.h>
+#include <linux/aio_abi.h>
 #include <QDebug>
 
 #include "tlib.h"
@@ -43,7 +45,8 @@
 #define MAX_IOSIZE_MB		(1024)
 #define MAX_IOSIZE			(1024 * 1024 * MAX_IOSIZE_MB)
 #define BIGTRANS_ALIGN		(32 * 1024)
-#define APP_MEMSIZE			(6 * 1024 * 1024)
+
+#define BUFIO_SIZERATIO		2		//v130
 
 //LTFS禁則文字
 #define LTFS_PROHIBIT_SLASH		"/"
@@ -86,7 +89,7 @@
 
 #define CV_WAIT_TICK		1000
 
-#define FASTCOPY_MUTEX		"/RapidCopyRunMutex"  //コピー実行を別RapidCopyプロセスとの間で排他するときのセマフォ名
+#define FASTCOPY_MUTEX		"/RapidCopyRunMutex_S"  //コピー実行を別RapidCopyプロセスとの間で排他するときのセマフォ名
 #define FASTCOPY_ELOG_MUTEX	"/RapidCopyELogMutex" //標準エラーログへの書き込みを排他するときのセマフォ名
 #define FASTCOPYLOG_MUTEX_INSTANCE 1				// QSystemSemaphore指定、同時実行を許可するインスタンス数
 #define FASTCOPY_MUTEX_INSTANCE 1					// FastCopy同時実行インスタンス数
@@ -98,6 +101,11 @@
 #define FASTCOPY_LTFS_MAXTRANSSIZE      FASTCOPY_MINLIMITIOSIZE	    //LTFSモード時のread/write単位。
 //1MB以上を指定すると原因不明のSIGBUSになるよ
 //Linuxでどうなるかはしらぬ
+
+#define FASTCOPY_LINUX_MAXLIMITAIONUM		(16)
+#define FASTCOPY_LINUX_MINAIONUM			(1)
+#define FASTCOPY_LTFS_MAXAIONUM             FASTCOPY_LINUX_MINAIONUM
+
 #define FASTCOPY_STACKSIZE (1024 * 1024 * 8)        //各スレッドのスタックサイズ
 
 #define FASTCOPY_FILTER_FLAGS_DIRENT 0				//FilterCheck時判断構造体はdirent
@@ -297,7 +305,7 @@ public:
     enum FsType { FSTYPE_NONE, FSTYPE_ADFS, FSTYPE_AFS, FSTYPE_CODA,
                   FSTYPE_EXT2,FSTYPE_EXT3,FSTYPE_EXT4,FSTYPE_BTRFS,
                   FSTYPE_F2FS,FSTYPE_ISOFS,FSTYPE_FAT,FSTYPE_NFS,
-                  FSTYPE_REISERFS,FSTYPE_SMB,FSTYPE_CIFS,FSTYPE_FUSE,
+                  FSTYPE_REISERFS,FSTYPE_SMB,FSTYPE_SMB2,FSTYPE_CIFS,FSTYPE_FUSE,
                   FSTYPE_HFS,FSTYPE_JFS,FSTYPE_NTFS,FSTYPE_UDF,
                   FSTYPE_XFS};
     enum Flags {
@@ -321,7 +329,6 @@ public:
         COMPARE_CREATETIME	=	0x00008000,
         SERIAL_MOVE			=	0x00010000,
         SERIAL_VERIFY_MOVE	=	0x00020000,
-        //USE_OSCACHE_READVERIFYは未使用
         USE_OSCACHE_READVERIFY=	0x00040000,
         RESTORE_HARDLINK	=	0x00080000,
         DISABLE_COMPARE_LIST=	0x00100000,
@@ -347,6 +354,7 @@ public:
       //ENABLE_READAHEAD	= 0x00000020,			read時先読み最適化有効
         ENABLE_PREALLOCATE	= 0x00000040,			//write時フラグメント抑止有効
         CSV_FILEOUT			= 0x00000100,			//CSVファイル出力要求
+        VERIFYERR_DELETE	= 0x00001000,			//dstベリファイエラー時にdumpデータ削除
         VERIFY_SHA1			= 0x01000000,			//SHA-1
         VERIFY_MD5			= 0x02000000,			//MD5
         VERIFY_XX			= 0x04000000,			//xxHash
@@ -366,6 +374,7 @@ public:
         unsigned int bufSize;	// (I/ )
         int		maxOpenFiles;	// (I/ )
         int		maxTransSize;	// (I/ )
+        int		maxAionum;		// (I/ )
         int		maxAttrSize;	// (I/ )
         int		maxDirSize;		// (I/ )
         int		maxLinkHash;	// (I/ ) Dest Hardlink 用 hash table サイズ
@@ -379,6 +388,8 @@ public:
         BOOL	isRenameMode;	// (/O) ...「複製します」ダイアログタイトル用情報（暫定）
                                 //           将来的に、情報が増えれば、メンバから切り離し
         int		flags_second;	// (I/ ) 動作モード第二フラグ
+        int		defTransSize;	//
+        int		defAionum;		//
     };
 
     enum Notify { END_NOTIFY, LISTING_NOTIFY,STAT_NOTIFY,CLI_JOBLISTNOTIFY};
@@ -413,7 +424,8 @@ public:
     DWORD GetWaitTick() { return waitTick; }
     BOOL GetTransInfo(TransInfo *ti, BOOL fullInfo=TRUE);
     BOOL GetPhaseInfo(TransInfo *ti);
-    int  CompensentIO_size(int req_iosize,FastCopy::FsType src_fstype,FastCopy::FsType dst_fstype);
+    int  CompensentIO_size(int req_iosize,FastCopy::FsType fstype);
+    int  CompensentAIO_num(int req_aionum,FastCopy::FsType fstype);
     void signal_handler(int signum);
     static bool ReadThread(void *fastCopyObj);
     static bool WriteThread(void *fastCopyObj);
@@ -524,6 +536,10 @@ protected:
     DWORD	maxReadSize;
     DWORD	maxDigestReadSize;
     DWORD	maxWriteSize;
+
+    DWORD	maxReadAionum;
+    DWORD	maxDigestReadAionum;
+    DWORD	maxWriteAionum;
     //大文字小文字分けて存在することを許すか？
     bool	srcCaseSense;		//true=大文字小文字を区別する false=大文字小文字を区別しない
     bool	dstCaseSense;
@@ -659,8 +675,6 @@ protected:
     BOOL FilterCheck(const void *path, const void *fname, DWORD attr, _int64 write_time,
                      _int64 file_size,int flags);
     BOOL ReadDirEntry(int dir_len, BOOL confirm_dir);
-    int CreateFileWithRetry(void *path, DWORD mode, DWORD share, int sa,
-                            DWORD cr_mode, DWORD flg, void* hTempl, int retry_max=10);
     BOOL OpenFileProc(FileStat *stat, int dir_len);
     BOOL OpenFileBackupProc(FileStat *stat, int src_len);
     BOOL OpenFileBackupStreamLocal(FileStat *stat,VBuf *buf,int *in_len);
@@ -668,8 +682,7 @@ protected:
     BOOL ReadMultiFilesProc(int dir_len);
     BOOL CloseMultiFilesProc(int maxCnt=0);
     void *RestoreOpenFilePath(void *path, int idx, int dir_len);
-    BOOL ReadFileWithReduce(int hFile, void *buf, DWORD size, DWORD *reads,
-                            void *overwrap);
+    BOOL ReadFileWithReduce(int hFile, void *buf, DWORD size, DWORD *reads, bool req_digest);
     BOOL ReadFileXattr(int hFile,char *xattrname, void *buf, DWORD size,DWORD *reads);
     BOOL ReadFileXattrWithReduce(int hFile,char *xattrname, void *buf, DWORD size,DWORD *reads,off_t file_size,_int64 remain_size);
     BOOL ReadFileProc(int start_idx, int *end_idx, int dir_len);
@@ -683,7 +696,7 @@ protected:
     BOOL WriteRandomData(void *path, FileStat *stat, BOOL skip_hardlink);
 
     BOOL IsSameContents(FileStat *srcStat,FileStat *dstStat);
-    BOOL MakeDigest(void *path, VBuf *vbuf, TDigest *digest, BYTE *val, _int64 *fsize=NULL,FileStat *stat=NULL);
+    BOOL MakeDigest(void *path, VBuf *vbuf, TDigest *digest, BYTE *val, _int64 *fsize=NULL,FileStat *stat=NULL,bool req_srcdigest=true);
 
     void DstRequest(DstReqKind kind);
     BOOL WaitDstRequest(void);
@@ -701,8 +714,7 @@ protected:
     BOOL PutDigestCalc(DigestCalc *obj, DigestCalc::Status status);
     BOOL MakeDigestAsync(DigestObj *obj);
     BOOL CheckDigests(CheckDigestMode mode);
-    BOOL WriteFileWithReduce(int hFile, void *buf, DWORD size, DWORD *written,
-                            void* overwrap);
+    BOOL WriteFileWithReduce(int hFile, void *buf, DWORD size,DWORD *written);
     BOOL WriteFileXattr(int hFile,char* xattr_name, void*buf,DWORD size,DWORD *written);
     BOOL WriteFileXattrWithReduce(int hFile,char* xattr_name, void*buf,DWORD size,DWORD *written,void *wk_xattrbuf,_int64 file_size,_int64 remain_size);
     BOOL WriteFileProc(int dst_len,int parent_fh=SYSCALL_ERR);
@@ -729,6 +741,7 @@ protected:
     }
 
     int GetSectorSize(const void *root_dir);
+    int SetOptFlags(int fd,bool req_odirect, bool req_readopt,char* path=NULL,FsType fstype=FSTYPE_NONE);
     BOOL IsSameDrive(const void *root1, const void *root2);
     BOOL PutList(void *path, DWORD opt, DWORD lastErr=0, BYTE *digest=NULL,qint64 file_size=SYSCALL_ERR,void* org_path=NULL);
     BOOL PutStat(void *info);

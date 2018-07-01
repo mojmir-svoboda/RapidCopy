@@ -20,7 +20,7 @@
 #include <QPlainTextEdit>
 #include <QTimer>
 #include <QThread>
-#include <QSystemSemaphore>
+//#include <QSystemSemaphore>
 #include <QProcess>
 #include <time.h>
 #include <QFileDialog>

@@ -61,6 +61,7 @@
 #define ISSAMEDIRRENAME_KEY		"is_samedir_rename"
 #define BUFSIZE_KEY				"bufsize"
 #define MAXTRANSSIZE_KEY		"max_transize"
+#define MAXAIONUM_KEY			"max_aionum"
 #define MAXOPENFILES_KEY		"max_openfiles"
 #define MAXATTRSIZE_KEY			"max_attrsize"
 #define MAXDIRSIZE_KEY			"max_dirsize"
@@ -82,6 +83,7 @@
 #define STREAM_KEY				"stream"
 #define XATTR_KEY				"xattr"
 #define VERIFY_KEY				"verify"
+#define VERIFY_ERRDEL_KEY		"verifyerrdel"
 #define IGNORE_DOT_KEY			"dotignore"
 #define USEMD5_KEY				"using_md5"
 #define ISLISTING_KEY			"isListing"
@@ -133,7 +135,7 @@
 #define SHUTDOWNTIME_KEY		"shutdown_time"
 #define FLAGS_KEY				"flags"
 #define LTFS_KEY				"ltfs"
-#define F_NOCACHE_KEY			"fnocache"
+#define F_ODIRECT_KEY			"odirect"
 #define RWSTAT_KEY				"rwstat"
 #define ASYNCIO_KEY				"asyncio"
 #define DATA_KEY				"data"
@@ -151,6 +153,7 @@
 #define DEFAULT_FORCESTART		0
 #define DEFAULT_BUFSIZE			256
 #define DEFAULT_MAXTRANSSIZE	1
+#define DEFAULT_MAXAIONUM		1
 #define DEFAULT_MAXATTRSIZE		(1024 * 1024 * 1024)
 #define DEFAULT_MAXDIRSIZE		(1024 * 1024 * 1024)
 #define DEFAULT_MAXOPENFILES	256
@@ -291,6 +294,7 @@ BOOL Cfg::ReadIni(void *user_dir, void *virtual_dir)
 
     bufSize			= ini.value(BUFSIZE_KEY,DEFAULT_BUFSIZE).toInt();
     maxTransSize	= ini.value(MAXTRANSSIZE_KEY, DEFAULT_MAXTRANSSIZE).toInt();
+    maxAionum		= ini.value(MAXAIONUM_KEY, DEFAULT_MAXAIONUM).toInt();
     //enableReadahead = ini.value(READAHEAD_KEY,FALSE).toBool();
 
     maxOpenFiles	= ini.value(MAXOPENFILES_KEY, DEFAULT_MAXOPENFILES).toInt();
@@ -321,9 +325,10 @@ BOOL Cfg::ReadIni(void *user_dir, void *virtual_dir)
     enableAcl		= ini.value(ACL_KEY, FALSE).toBool();
     enableXattr		= ini.value(XATTR_KEY, FALSE).toBool();
     enableVerify	= ini.value(VERIFY_KEY, false).toBool();
+    enableVerifyErrDel = ini.value(VERIFY_ERRDEL_KEY, true).toBool();
     Dotignore_mode  = ini.value(IGNORE_DOT_KEY, true).toBool();
     enableLTFS		= ini.value(LTFS_KEY, false).toBool();
-    //enableF_NOCACHE = ini.value(F_NOCACHE_KEY,false).toBool();
+    enableOdirect   = ini.value(F_ODIRECT_KEY,true).toBool();
     usingMD5		= ini.value(USEMD5_KEY,1).toInt();
     enableNSA		= ini.value(NSA_KEY, FALSE).toBool();
     delDirWithFilter= ini.value(DELDIR_KEY, FALSE).toBool();
@@ -540,44 +545,30 @@ BOOL Cfg::WriteIni(void)
 
     ini.setValue(BUFSIZE_KEY,bufSize);
     ini.setValue(MAXTRANSSIZE_KEY, maxTransSize);
-//	ini.setValue(MAXOPENFILES_KEY, maxOpenFiles);
-//廃止
-//	ini.setValue(NONBUFMINSIZENTFS_KEY, nbMinSizeNtfs);
-//	ini.setValue(NONBUFMINSIZEFAT_KEY, nbMinSizeFat);
-//	ini.setValue(ISREADOSBUF_KEY, isReadOsBuf);
+    ini.setValue(MAXAIONUM_KEY, maxAionum);
     ini.setValue(MAX_HISTORY_KEY, maxHistoryNext);
     ini.setValue(COPYMODE_KEY, copyMode);
-//	ini.setValue(COPYFLAGS_KEY, copyFlags);
     ini.setValue(SKIPEMPTYDIR_KEY, skipEmptyDir);
     ini.setValue(IGNORE_ERR_KEY, ignoreErr);
     ini.setValue(ESTIMATE_KEY, estimateMode);
     ini.setValue(DISKMODE_KEY, diskMode);
     ini.setValue(ISTOPLEVEL_KEY, isTopLevel);
     ini.setValue(ISERRLOG_KEY, isErrLog);
-//ini.setValue(ISUTF8LOG_KEY, isUtf8Log);
     ini.setValue(FILELOGMODE_KEY, fileLogMode);
     ini.setValue(ACLERRLOG_KEY, aclErrLog);
     ini.setValue(STREAMERRLOG_KEY, streamErrLog);
-//	ini.setValue(ISRUNASBUTTON_KEY, isRunasButton);
     ini.setValue(ISSAMEDIRRENAME_KEY, isSameDirRename);
-//  ini.setValue(SHEXTAUTOCLOSE_KEY, shextAutoClose);
-//  ini.setValue(SHEXTTASKTRAY_KEY, shextTaskTray);
-//  ini.setValue(SHEXTNOCONFIRMDEL_KEY, shextNoConfirmDel);
     ini.setValue(EXECCONRIM_KEY, execConfirm);
     ini.setValue(FORCESTART_KEY, forceStart);
     ini.setValue(LCID_KEY, lcid);
-//	ini.setValue(WAITTICK_KEY, waitTick);
-//	ini.setValue(ISAUTOSLOWIO_KEY, isAutoSlowIo);
     ini.setValue(SPEEDLEVEL_KEY, speedLevel);
-//	ini.setValue(ALWAYSLOWIO_KEY, alwaysLowIo);
     ini.setValue(OWDEL_KEY, enableOwdel);
     ini.setValue(ACL_KEY, enableAcl);
-//	ini.setValue(STREAM_KEY, enableStream);
     ini.setValue(XATTR_KEY, enableXattr);
     ini.setValue(IGNORE_DOT_KEY,Dotignore_mode);
     ini.setValue(LTFS_KEY,enableLTFS);
-//ini.setValue(F_NOCACHE_KEY,enableF_NOCACHE);
     ini.setValue(VERIFY_KEY, enableVerify);
+    ini.setValue(VERIFY_ERRDEL_KEY, enableVerifyErrDel);
     ini.setValue(USEMD5_KEY, usingMD5);
     ini.setValue(NSA_KEY, enableNSA);
     ini.setValue(DELDIR_KEY, delDirWithFilter);
@@ -585,10 +576,6 @@ BOOL Cfg::WriteIni(void)
     ini.setValue(SERIALMOVE_KEY, serialMove);
     ini.setValue(SERIALVERIFYMOVE_KEY, serialVerifyMove);
     ini.setValue(REPARSE_KEY, isReparse);
-//	ini.setValue(LINKDEST_KEY, isLinkDest);
-//	int->setValue(MAXLINKHASH_KEY, maxLinkHash);
-//	int->setValue(ALLOWCONTFSIZE_KEY, allowContFsize);
-//	ini.setValue(RECREATE_KEY, isReCreate);
     ini.setValue(EXTENDFILTER_KEY, isExtendFilter);
     ini.setValue(TASKBARMODE_KEY, taskbarMode);
     ini.setValue(INFOSPAN_KEY, infoSpan);
@@ -598,6 +585,7 @@ BOOL Cfg::WriteIni(void)
     ini.setValue(ASYNCIO_KEY,async);
     ini.setValue(DISABLE_UTIME_KEY,isDisableutime);
 //  ini.setValue(READAHEAD_KEY,enableReadahead);
+    ini.setValue(F_ODIRECT_KEY,enableOdirect);
     ini.setValue(JOBLISTMODE_KEY,isJobListMode);
 
     ini.endGroup();
