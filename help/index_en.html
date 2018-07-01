@@ -506,11 +506,21 @@ output reference is <a href="#Log">here</a><br>(Compare file pairs that will be 
 
 	<h3 class="help_head3">Preferences</h3>
 	<div class="help_sub_section">
-		General settings. (change Default values, I/O parameters, and Copy Options, etc)
-		<h4 class="help_head3">I/O Settings -> MAX I/O(MB)</h4>
-		Specifies the Read / Write size when reading and writing data.<br>
-		In the case of ultra-high-speed network environment, such as 10G Ethernet you may want to speed if you specify a 4-8MB.<br>
-		Except under 10G environment, we recommended default value(1MB).
+                General settings. (change Default values, I/O parameters, and Copy Options, etc)
+                <table class="help_table" border="4">
+                <a name="setting_io"/>
+                <h4 class="help_head3">I/O Settings -> I/O Settings</h4>
+                Specifies the Read/Write size when reading and writing data.<br>
+                <tr><td nowrap><strong>I/O unit (MB)</strong></td><td>read/write request unit size for OS.<br>
+                "I/O unit" * "OverLap I/O Num" is the [Max I/O size] for OS.<br>
+                <font color="red">If it's too large, I/O errors will occur. Please carefully test and set it.</font><br>
+                (<a href="#mainwin">Buffer size</a> is required more than twice value of Max I/O Size)</td></tr>
+                <tr><td nowrap><strong>OverLap I/O Num</strong></td><td><strong>
+                </strong>I/O performance(especially 10G Ether) is improved by LinuxAIO system call.<br>
+                (<strong>If it is specified "1", use legacy read/write systemcall</strong>)<br>
+                <font color="red">Note:Running multiple RapidCopy, It may cause I/O error due to insufficient resources in the kernel.</font><br>
+                </td></tr>
+                </table>
 		<h4 class="help_head3">I/O Settings -> Verify mode</h4>
 		Select verify algroithm. Default is MD5<br>
 		If you want to save CPU resources can be used to lower the CPU utilization by using the xxHash.<br>
@@ -878,6 +888,16 @@ output reference is <a href="#Log">here</a><br>(Compare file pairs that will be 
 
 <table class="help_table" border="4">
 <tr><th>Version</th><th>Summary</th></tr>
+<tr><td>1.3.0</td><td>(2018/06/27)<br>
+Support <a href="#setting_io">Linux AIO</a><br>
+Support O_DIRECT flag for read/write(default:enable) thx Mr Shirouzu.<br>
+Optimize read/write performance(O_NOATIME,posix_fadvise...) etc..<br>
+Automatically scroll to the end of the input src/dst path<br>
+Bug fix.<br>
+<li>silent crash at copy beggining,copy end(probably..)</li>
+<li>"I/O unit" is always ignore and force set to "1".</li>
+<li>When dst error caused. Copy operation stopped.</li>
+</td></tr>
 <tr><td>1.2.7</td><td>(2018/03/07)<br>
 Fix force verify one by one.<br>
 Porting from RapidCopy for mac v1.2.6<br>
