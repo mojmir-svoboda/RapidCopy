@@ -1020,223 +1020,223 @@ Please check to think well the order dependent.&lt;br&gt;
 <context>
     <name>QObject</name>
     <message>
-        <location filename="mainwindow.cpp" line="2818"/>
+        <location filename="mainwindow.cpp" line="2837"/>
         <source>Source path to copy.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2821"/>
+        <location filename="mainwindow.cpp" line="2840"/>
         <source>Specify operation mode.(Default: dif)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2825"/>
+        <location filename="mainwindow.cpp" line="2844"/>
         <source>Specify the job that is already registered.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2828"/>
+        <location filename="mainwindow.cpp" line="2847"/>
         <source>Specify the joblist that is already registered.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2831"/>
+        <location filename="mainwindow.cpp" line="2850"/>
         <source>Specify the size(MB) of the main buffer for Read/Write opration.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2835"/>
+        <location filename="mainwindow.cpp" line="2854"/>
         <source>Write to the detailed filelog(detail of copy/delete files with checksum) It is stored YYYY/MM/DD-hh:mm:ss-N.log in RapidCopy/Log directory.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2840"/>
+        <location filename="mainwindow.cpp" line="2859"/>
         <source>Specify the filename of standard logfile.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2844"/>
+        <location filename="mainwindow.cpp" line="2863"/>
         <source>Write the operation/errors information to the standard logfile(RapidCopy.log).</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2848"/>
+        <location filename="mainwindow.cpp" line="2867"/>
         <source>Copy symlink as link.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2852"/>
+        <location filename="mainwindow.cpp" line="2871"/>
         <source>Start at once without waiting for the finish of other FastCopy executing.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2856"/>
+        <location filename="mainwindow.cpp" line="2875"/>
         <source>Skip to create empty directories when /include or /exclude option is used.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2860"/>
+        <location filename="mainwindow.cpp" line="2879"/>
         <source>Show error dialog (and operation is interrupted), if an error occurred.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2865"/>
+        <location filename="mainwindow.cpp" line="2884"/>
         <source>Estimate complete time.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2867"/>
+        <location filename="mainwindow.cpp" line="2886"/>
         <source>Verify written files data.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2871"/>
+        <location filename="mainwindow.cpp" line="2890"/>
         <source>Specify speed control level.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2881"/>
+        <location filename="mainwindow.cpp" line="2900"/>
         <source>Rename filename and wipe(overwrite Random data) before deleting.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2885"/>
+        <location filename="mainwindow.cpp" line="2904"/>
         <source>Copy ACL (only HFS+).</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2889"/>
+        <location filename="mainwindow.cpp" line="2908"/>
         <source>Copy EA(Extend Attribute).</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2893"/>
+        <location filename="mainwindow.cpp" line="2912"/>
         <source>Reproduce hardlink as much as possible.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2897"/>
+        <location filename="mainwindow.cpp" line="2916"/>
         <source>Change updating behavior overwrite the target to delete and recreate the target. (If /linkdest option is enabled, this option is enabled by default.) If you want always to enable, write [main] recreate=1 in RapidCopy.ini</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2901"/>
+        <location filename="mainwindow.cpp" line="2920"/>
         <source>Specify source files by textfile. User is able to describe 1 filename per line.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2905"/>
+        <location filename="mainwindow.cpp" line="2924"/>
         <source>Don&apos;t stored in the task tray.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2908"/>
+        <location filename="mainwindow.cpp" line="2927"/>
         <source>Close automatically after execution is finished with no errors.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2910"/>
+        <location filename="mainwindow.cpp" line="2929"/>
         <source>Close automatically and forcedly after execution is finished.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2913"/>
+        <location filename="mainwindow.cpp" line="2932"/>
         <source>Don&apos;t start to execute.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2915"/>
+        <location filename="mainwindow.cpp" line="2934"/>
         <source>Specify Auto/Same/Diff HDD mode. (default: auto)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2919"/>
+        <location filename="mainwindow.cpp" line="2938"/>
         <source>Specify include filter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2923"/>
+        <location filename="mainwindow.cpp" line="2942"/>
         <source>Specify exclude filter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2927"/>
+        <location filename="mainwindow.cpp" line="2946"/>
         <source>Specify oldest timestamp filter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2931"/>
+        <location filename="mainwindow.cpp" line="2950"/>
         <source>Specify newest timestamp filter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2935"/>
+        <location filename="mainwindow.cpp" line="2954"/>
         <source>Specify minimum size filter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2939"/>
+        <location filename="mainwindow.cpp" line="2958"/>
         <source>Specify maximum size filter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2943"/>
+        <location filename="mainwindow.cpp" line="2962"/>
         <source>Don&apos;t confirm before deleting.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2945"/>
+        <location filename="mainwindow.cpp" line="2964"/>
         <source>Don&apos;t Show error dialog, Even if critical errors occurred.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2947"/>
+        <location filename="mainwindow.cpp" line="2966"/>
         <source>Specify post-process action name.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2951"/>
+        <location filename="mainwindow.cpp" line="2970"/>
         <source>Destination Directory.(If delete mode is specified, then to option isn&apos;t used.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2955"/>
+        <location filename="mainwindow.cpp" line="2974"/>
         <source>LTFS mode.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2958"/>
+        <location filename="mainwindow.cpp" line="2977"/>
         <source>Ignore hidden files and folders that begin from the .</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2961"/>
+        <location filename="mainwindow.cpp" line="2980"/>
         <source>Specifies the window x position at startup. Must specify with --ypos.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2965"/>
+        <location filename="mainwindow.cpp" line="2984"/>
         <source>Specifies the window y position at startup. Must specify with --xpos.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2969"/>
+        <location filename="mainwindow.cpp" line="2988"/>
         <source>Write to the csv file(based on deteiled file log)It is stored YYYY/MM/DD-hh:mm:ss-N.csv in RapidCopy/Log directory.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3017"/>
+        <location filename="mainwindow.cpp" line="3036"/>
         <source>illgal option -- </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3160"/>
+        <location filename="mainwindow.cpp" line="3179"/>
         <source>Too small(&lt;300000) hashtable for linkdest.
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="3176"/>
+        <location filename="mainwindow.cpp" line="3195"/>
         <source>Can&apos;t open:</source>
         <translation></translation>
     </message>
@@ -1432,7 +1432,9 @@ Please refer to help for details or DestDir field Tooltip.</source>
     </message>
     <message>
         <location filename="tmisc.cpp" line="56"/>
-        <source>http://www.lespace.co.jp/file_bl/rapidcopy/manual/</source>
+        <location filename="tmisc.cpp" line="115"/>
+        <source>https://github.com/KengoSawa2/RapidCopy</source>
+        <oldsource>http://www.lespace.co.jp/file_bl/rapidcopy/manual/</oldsource>
         <translation>http://www.lespace.co.jp/file_bl/rapidcopy/manual/</translation>
     </message>
     <message>
@@ -1593,19 +1595,19 @@ Please send this file to author.</source>
     </message>
     <message>
         <location filename="tmisc.cpp" line="82"/>
-        <location filename="tmisc.cpp" line="196"/>
+        <location filename="tmisc.cpp" line="197"/>
         <source>Standby</source>
         <translation>スタンバイ</translation>
     </message>
     <message>
         <location filename="tmisc.cpp" line="83"/>
-        <location filename="tmisc.cpp" line="197"/>
+        <location filename="tmisc.cpp" line="198"/>
         <source>Hibernate</source>
         <translation>ハイバネート</translation>
     </message>
     <message>
         <location filename="tmisc.cpp" line="84"/>
-        <location filename="tmisc.cpp" line="198"/>
+        <location filename="tmisc.cpp" line="199"/>
         <source>Shutdown</source>
         <translation>シャットダウン</translation>
     </message>
@@ -1770,11 +1772,6 @@ YYYYMMDD             ex) 20090101
         <translation>コマンドラインモードはサポートしていません</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="115"/>
-        <source>http://www.lespace.co.jp/file_bl/rapidcopy/manual/index_en.html</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>RapidCopyPro update detected.</source>
         <translation type="vanished">新しいバージョンがあります</translation>
     </message>
@@ -1842,7 +1839,7 @@ Disk devices,FileSystems,drivers,cables....</source>
         <translation>&quot;新しいウインドウを開く&quot;をRapidCopyの実行中に行うことはできません。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="162"/>
+        <location filename="tmisc.cpp" line="163"/>
         <source>ves</source>
         <translation></translation>
     </message>
@@ -1861,17 +1858,17 @@ Disk devices,FileSystems,drivers,cables....</source>
         <translation>正常時/エラー時</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="131"/>
+        <location filename="tmisc.cpp" line="132"/>
         <source>RapidCopy</source>
         <translation>RapidCopy</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="132"/>
+        <location filename="tmisc.cpp" line="133"/>
         <source>Clear path</source>
         <translation>パスをクリア</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="133"/>
+        <location filename="tmisc.cpp" line="134"/>
         <source>Diff (Size)</source>
         <oldsource>Diff (Name/Size)</oldsource>
         <translation>差分(サイズ)</translation>
@@ -1881,27 +1878,27 @@ Disk devices,FileSystems,drivers,cables....</source>
         <translation type="vanished">nas</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="173"/>
+        <location filename="tmisc.cpp" line="174"/>
         <source>ea</source>
         <translation>ea</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="215"/>
+        <location filename="tmisc.cpp" line="216"/>
         <source>nodot</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="216"/>
+        <location filename="tmisc.cpp" line="217"/>
         <source>xpos</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="217"/>
+        <location filename="tmisc.cpp" line="218"/>
         <source>ypos</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="218"/>
+        <location filename="tmisc.cpp" line="219"/>
         <source>%04d%02d%02d-%02d%02d%02d-%d%s.csv</source>
         <translation></translation>
     </message>
@@ -1911,29 +1908,29 @@ Disk devices,FileSystems,drivers,cables....</source>
         <translation type="vanished">コピー先にNTFSディレクトリを指定する事はできません。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="228"/>
+        <location filename="tmisc.cpp" line="229"/>
         <source>The case from the sensitive file system you are trying to copy a file system that is case-insensitive.
 Change the source file name or change the case sensitive file system.</source>
         <translation>大文字小文字を区別するファイルシステムから大文字小文字を区別しないファイルシステムにコピーしようとしています。
 コピー元のファイル名を変更するか、大文字小文字を区別するファイルシステムに変更してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="229"/>
+        <location filename="tmisc.cpp" line="230"/>
         <source>FinAct Saved/Created.</source>
         <translation>終了時処理を保存/作成しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="230"/>
+        <location filename="tmisc.cpp" line="231"/>
         <source>FinAct Deleted.</source>
         <translation>終了時処理を削除しました</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="231"/>
+        <location filename="tmisc.cpp" line="232"/>
         <source>Job Saved/Created.</source>
         <translation>ジョブを保存/作成しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="232"/>
+        <location filename="tmisc.cpp" line="233"/>
         <source>Job Add Error.</source>
         <translation>ジョブ追加でエラーが発生しました</translation>
     </message>
@@ -1968,65 +1965,65 @@ Are you sure you want to quit the RapidCopyPro?</source>
         <translation type="vanished">RapidCopyPro ライセンス情報:</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="245"/>
+        <location filename="tmisc.cpp" line="246"/>
         <source>Filesize change detected. Check file.</source>
         <translation>ファイルサイズ変更を検知しました。ファイルを確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="246"/>
+        <location filename="tmisc.cpp" line="247"/>
         <source>Warning:LTFS prohibit character detected. Prohibit character Convert to _</source>
         <translation>LTFS禁則文字を検出したため、&quot;_&quot;に自動置換しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="247"/>
+        <location filename="tmisc.cpp" line="248"/>
         <source>LTFS prohibit character Convert error. You need to do the conversion process.</source>
         <translation>LTFS禁則文字の自動置換に失敗しました。コピー元のLTFS禁則文字を変更してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="248"/>
+        <location filename="tmisc.cpp" line="249"/>
         <source>JobList Created.</source>
         <oldsource>JobList Saved/Created.</oldsource>
         <translation>ジョブリストを作成しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="249"/>
+        <location filename="tmisc.cpp" line="250"/>
         <source>JobList Created Error.Plz Report.</source>
         <oldsource>JobList Saved/Created Error.</oldsource>
         <translation>ジョブリストの作成でエラーが発生しました。作者に連絡してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="250"/>
+        <location filename="tmisc.cpp" line="251"/>
         <source>Job will delete. Are you ok?</source>
         <translation>ジョブを削除します、よろしいですか？</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="251"/>
+        <location filename="tmisc.cpp" line="252"/>
         <source>JobList Deleted.</source>
         <translation>ジョブリストを削除しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="252"/>
+        <location filename="tmisc.cpp" line="253"/>
         <source>JobList Deleted Error.</source>
         <translation>ジョブリスト削除に失敗しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="253"/>
+        <location filename="tmisc.cpp" line="254"/>
         <source>JobList Entry Max detected. max = 256</source>
         <translation>ジョブリストに登録できる上限を超えました。256個以内にしてください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="254"/>
+        <location filename="tmisc.cpp" line="255"/>
         <source>JobGroup delete Error. plz report.</source>
         <translation>ジョブグループ削除でエラーが発生しました。作者に連絡してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="255"/>
+        <location filename="tmisc.cpp" line="256"/>
         <source>input/select JobList name</source>
         <oldsource>Set JobListName</oldsource>
         <translation>新規作成/削除するジョブリスト名を入力または選択</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="256"/>
+        <location filename="tmisc.cpp" line="257"/>
         <source>Cancel JobList</source>
         <translation>ジョブリストキャンセル</translation>
     </message>
@@ -2035,17 +2032,17 @@ Are you sure you want to quit the RapidCopyPro?</source>
         <translation type="vanished">登録</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="277"/>
+        <location filename="tmisc.cpp" line="279"/>
         <source>Operation not permitted. check file.</source>
         <translation>当該操作は許可されていません、ファイルへのアクセス権限を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="301"/>
+        <location filename="tmisc.cpp" line="303"/>
         <source>Maximum allowable hard links to a single file has been exceeded. hardlink operation has been canceled.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="321"/>
+        <location filename="tmisc.cpp" line="323"/>
         <source>Notice: EA has been lost. EA name is below. </source>
         <oldsource>Notice: EA has been lost. EA name = </oldsource>
         <translation>注意:EAはコピーされません、EAの名称は以下の通りです。</translation>
@@ -2055,12 +2052,12 @@ Are you sure you want to quit the RapidCopyPro?</source>
         <translation type="vanished">OS標準の効果音を選択してください</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="242"/>
+        <location filename="tmisc.cpp" line="243"/>
         <source>About %s</source>
         <translation>%s について</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="273"/>
+        <location filename="tmisc.cpp" line="275"/>
         <source>Enter Copy Destination folder in the DestDir button or drag-and-drop.
 Put &apos;/&apos; at the end, create a folder of the source folder name to the destination.
 Don&apos;t put a &apos;/&apos; at the end, copy the data directly below the source folder to the destination.</source>
@@ -2073,124 +2070,129 @@ Don&apos;t put a &apos;/&apos; at the end, copy the data directly below the sour
         <translation type="vanished">ジョブを削除しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="233"/>
+        <location filename="tmisc.cpp" line="234"/>
         <source>Wait for finish action...
 </source>
         <translation>終了時処理に設定した各アクションの終了を待っています...</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="234"/>
+        <location filename="tmisc.cpp" line="235"/>
         <source>RapidCopy Execution finished.</source>
         <translation>RapidCopyの実行が終了しました</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="235"/>
+        <location filename="tmisc.cpp" line="236"/>
         <source>Input %d Path.</source>
         <translation>入力パス数:%d</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="236"/>
+        <location filename="tmisc.cpp" line="237"/>
         <source>Added %d Path. Total %d Paths.</source>
         <translation>追加パス数:%d 合計パス数:%d</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="237"/>
+        <location filename="tmisc.cpp" line="238"/>
         <source>Please make sure the source or destination is set.</source>
         <translation>コピー元とコピー先が指定されているか
 確認してください</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="238"/>
+        <location filename="tmisc.cpp" line="239"/>
         <source>Source paths is too long. Reduce the paths.</source>
         <oldsource>Source paths is too long. Reduce the paths within 1MB.</oldsource>
         <translation>コピー元に指定したパス長が長すぎます。パス数を減らしてください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="239"/>
+        <location filename="tmisc.cpp" line="240"/>
         <source>Source cleared.</source>
         <translation>コピー元パスをリセットしました</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="240"/>
+        <location filename="tmisc.cpp" line="241"/>
         <source>Dest cleared.</source>
         <translation>コピー先パスをリセットしました</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="241"/>
+        <location filename="tmisc.cpp" line="242"/>
         <source>Can&apos;t select the other sound of RapidCopy folder.</source>
         <oldsource>You can not select the other sound of RapidCopy folder.</oldsource>
         <translatorcomment>未使用</translatorcomment>
         <translation>RapidCopyフォルダ以外のフォルダは指定できません。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="243"/>
+        <location filename="tmisc.cpp" line="244"/>
         <source>No sound.</source>
         <translation>サウンド無し</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="257"/>
+        <location filename="tmisc.cpp" line="258"/>
         <source>Execute JobList</source>
         <translation>ジョブリスト実行</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="258"/>
+        <location filename="tmisc.cpp" line="259"/>
         <source>Job Overwrite.</source>
         <translation>ジョブ内容を上書きしました</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="260"/>
+        <location filename="tmisc.cpp" line="261"/>
         <source>Single Jobs</source>
         <translation>シングルジョブ一覧</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="261"/>
+        <location filename="tmisc.cpp" line="262"/>
         <source> is not saved. changing save?</source>
         <oldsource>JobList is not saved. changing save?</oldsource>
         <translation>は保存されていません、保存しますか？</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="262"/>
+        <location filename="tmisc.cpp" line="263"/>
         <source>Job name changed.</source>
         <translation>ジョブ名称を変更しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="263"/>
+        <location filename="tmisc.cpp" line="264"/>
         <source>The name is duplicate. Please renameing.</source>
         <translation>ジョブ名が重複しています。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="264"/>
+        <location filename="tmisc.cpp" line="265"/>
         <source>JobLists</source>
         <translation>ジョブリスト一覧</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="265"/>
+        <location filename="tmisc.cpp" line="266"/>
         <source>Can&apos;t Save/Delete JobList Job. Please renaming.</source>
         <translation>ジョブリスト名の保存/削除に失敗しました。別の名称を指定してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="266"/>
+        <location filename="tmisc.cpp" line="267"/>
         <source>JobList Rename</source>
         <translation>ジョブリストリネーム</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="267"/>
+        <location filename="tmisc.cpp" line="268"/>
         <source>JobList will delete. Are you ok?</source>
         <translation>ジョブリストを削除します。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="268"/>
+        <location filename="tmisc.cpp" line="269"/>
         <source>All Job will delete. Are you ok?</source>
         <translation>全てのジョブを削除します。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="269"/>
+        <location filename="tmisc.cpp" line="270"/>
         <source>job changed detected. If you want save(overwrite), press Option+S</source>
         <oldsource>job changed detected. If you want save(overwrite) Plz press ⌥+S</oldsource>
         <translation>現在選択中のジョブ内容の変更を検知しました。保存する場合はOption+Sで保存してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="272"/>
+        <location filename="tmisc.cpp" line="271"/>
+        <source>LTFS prohibit character duplication detected. You should change source file/folder name.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tmisc.cpp" line="274"/>
         <source>Enter Copy source files and folders in the Source button or drag-and-drop.</source>
         <translation>コピー元ファイル/フォルダをダイアログやD&amp;Dで入力します(複数入力可)</translation>
     </message>
@@ -2199,7 +2201,7 @@ Don&apos;t put a &apos;/&apos; at the end, copy the data directly below the sour
         <translation type="vanished">コピー先フォルダをダイアログやD&amp;Dで入力します</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="275"/>
+        <location filename="tmisc.cpp" line="277"/>
         <source>Add/Modify/Del...</source>
         <translation>追加/変更/削除...</translation>
     </message>
@@ -2208,13 +2210,13 @@ Don&apos;t put a &apos;/&apos; at the end, copy the data directly below the sour
         <translation type="vanished">許可されていない操作を実行しました。ファイル名またはファイルの属性が適切か確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="314"/>
+        <location filename="tmisc.cpp" line="316"/>
         <source>Call function is not supported on the system.</source>
         <oldsource>Call function is not supported by the system. Plaease Report.</oldsource>
         <translation>未サポートのシステムコールをコールしました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="320"/>
+        <location filename="tmisc.cpp" line="322"/>
         <source>Failed update Date information. Please re-run with [Diff (Size/date)].</source>
         <translation>日時情報の更新に失敗しました。コピー終了後に差分(サイズ/日付)を再実行してください。</translation>
     </message>
@@ -2225,129 +2227,129 @@ Don&apos;t put a &apos;/&apos; at the end, copy the data directly below the sour
         <translation type="obsolete">許可されていない操作を実行しました。ファイル名またはファイルの属性が適切か確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="278"/>
+        <location filename="tmisc.cpp" line="280"/>
         <source>No such file or directory. check exists.</source>
         <oldsource>No such file or directory. check file exists.</oldsource>
         <translatorcomment>コピー中のstat等で、対象ファイルが消えていると出力される。</translatorcomment>
         <translation>ファイルまたはディレクトリが見つからないので対象ファイルへの処理をキャンセルしました。実在を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="279"/>
+        <location filename="tmisc.cpp" line="281"/>
         <source>Interrupted function call.</source>
         <translatorcomment>signalで割り込まれた場合に発生。</translatorcomment>
         <translation>システム割り込み処理により、対象ファイルへの処理がキャンセルされました。対象ファイルのコピーを再実行してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="280"/>
+        <location filename="tmisc.cpp" line="282"/>
         <source>An I/O error occurred while (read/write) file system. check Device or file system.</source>
         <translatorcomment>デバイス都合とかで色々発生するはず</translatorcomment>
         <translation>I/Oエラーが発生しました。デバイスまたはファイルシステムが正常か確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="281"/>
+        <location filename="tmisc.cpp" line="283"/>
         <source>A requested action cannot be performed by the device.</source>
         <translatorcomment>キャラクタデバイスファイルまたはブロックスペシャルファイルへのopenで発生する可能性あり</translatorcomment>
         <translation>特殊ファイルに対してシステムコールを実行しました。対象ファイルが通常のファイルであることを確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="282"/>
+        <location filename="tmisc.cpp" line="284"/>
         <source>Arg list too long.</source>
         <translatorcomment>setxattr等で異常な値を指定した場合に出力</translatorcomment>
         <translation>システムコールで異常なサイズのデータを指定したため、当該処理をキャンセルしました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="283"/>
+        <location filename="tmisc.cpp" line="285"/>
         <source>Exec format error.</source>
         <translatorcomment>たぶんでないので無視</translatorcomment>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="284"/>
+        <location filename="tmisc.cpp" line="286"/>
         <source>Bad file descripter. check file permission.</source>
         <translation>不正ファイルハンドル指定です。アクセス権を確認後、問題が無ければレポートを送付してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="285"/>
+        <location filename="tmisc.cpp" line="287"/>
         <source>Cannot allocate memory. please make sure sufficient amount of memory exists.</source>
         <translation>システムメモリ不足です。メモリの空きを確認してからコピーを再実行してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="286"/>
+        <location filename="tmisc.cpp" line="288"/>
         <source>Permission denied. check permission or system prohibit char usage.</source>
         <oldsource>Permission denied. check permission.</oldsource>
         <translation>アクセス拒否です。アクセス権または禁止ファイル名でないか確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="287"/>
+        <location filename="tmisc.cpp" line="289"/>
         <source>(read/write) operation internal error was occured. Plaease Report.</source>
         <translation>readまたはwrite処理の内部矛盾が発生しました。レポートを送付してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="288"/>
+        <location filename="tmisc.cpp" line="290"/>
         <source>Not a block device. check block device or file.</source>
         <translatorcomment>たぶんでないので放置</translatorcomment>
         <translation>ブロックデバイスではありません。ブロックデバイスか通常ファイルであることを確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="289"/>
+        <location filename="tmisc.cpp" line="291"/>
         <source>Resource busy. check the system resource,run again.</source>
         <translation>システムや他プログラムによって開かれているか、マウントポイントを指定しています。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="290"/>
+        <location filename="tmisc.cpp" line="292"/>
         <source>file or directory exists. Please running again by removing the target file as necessary.</source>
         <translatorcomment>普通は先に削除するため、発生しない。隙間で何かやられた？</translatorcomment>
         <translation>上書き書き込みに失敗しました。必要に応じて対象を削除した後にコピーを再実行してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="291"/>
+        <location filename="tmisc.cpp" line="293"/>
         <source>A hard link to a file on another file system was attempted. hardlink operation has been canceled.</source>
         <translation>ハードリンクをソース元と異なるディスクに作成する事はできません。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="292"/>
+        <location filename="tmisc.cpp" line="294"/>
         <source>An attempt was made to apply an inappropriate function to a device. operation has been canceled.</source>
         <translatorcomment>ファイルに対するmmap使ってないので出ないはず</translatorcomment>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="293"/>
+        <location filename="tmisc.cpp" line="295"/>
         <source>A component of the path prefix is not a directory. check file path.</source>
         <translation>パス不正を検出しました。パスの一部がディレクトリではありません。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="294"/>
+        <location filename="tmisc.cpp" line="296"/>
         <source>Directory for instructions intended for the file has been specified. check file.</source>
         <translation>ディレクトリ対象処理でファイルが指定されました。パスを確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="295"/>
+        <location filename="tmisc.cpp" line="297"/>
         <source>Invalid argument was passed to a system call. Please report.</source>
         <translation>不正引数指定により処理をキャンセルしました。レポートを送付してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="296"/>
+        <location filename="tmisc.cpp" line="298"/>
         <source>Too many open files in system. close unnecessary files or extend the number of files open.</source>
         <translation>システム定義値以上のファイルを開いています。不要ファイルを閉じるかシステム定義を変更してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="297"/>
+        <location filename="tmisc.cpp" line="299"/>
         <source>Too many open files in RapidCopy. Please report.</source>
         <translatorcomment>内部矛盾</translatorcomment>
         <translation>RapidCopyが不正に大量のファイルを開いているため失敗しました。レポートを送付してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="298"/>
+        <location filename="tmisc.cpp" line="300"/>
         <source>File was greater than the maximum file size. check target file system file size limited.</source>
         <translation>ファイルサイズの上限を越えたファイルを作成しようとしました。ファイルシステム仕様を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="299"/>
+        <location filename="tmisc.cpp" line="301"/>
         <source>There is no free space remaining on the file system containing the file. check the free space.</source>
         <translation>ファイルシステムに空きがありません。空き容量を確保してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="300"/>
+        <location filename="tmisc.cpp" line="302"/>
         <source>Tried to open a read-only file in writing. check permission or device.</source>
         <translation>読込専用ファイルを書込用にオープンしました。アクセス権または読込専用デバイスの確認をしてください。</translation>
     </message>
@@ -2356,67 +2358,67 @@ Don&apos;t put a &apos;/&apos; at the end, copy the data directly below the sour
         <translation type="vanished">システム定義のハードリンク上限を越えました。システム定義を変更するかハードリンクを減らしてください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="302"/>
+        <location filename="tmisc.cpp" line="304"/>
         <source>Resource temporarily unavailable.</source>
         <oldsource>Resource temporarily unavailable. please Report.</oldsource>
         <translation>システムの一時的なリソース不足が発生しました。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="303"/>
-        <location filename="tmisc.cpp" line="316"/>
+        <location filename="tmisc.cpp" line="305"/>
+        <location filename="tmisc.cpp" line="318"/>
         <source>Operation not supported at this file system.</source>
         <oldsource>Can&apos;t support EA or ACL at this file system. Please note that EA or ACL has been lost.</oldsource>
         <translatorcomment>EA,ACLエラーログを有効にしていないと出力されない。追加メッセージでXATTRなのはACLなのかを説明する。</translatorcomment>
         <translation>指定ファイル属性に未対応のファイルシステムです。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="304"/>
+        <location filename="tmisc.cpp" line="306"/>
         <source>Network is down. check network connection.</source>
         <translation>ネットワークダウンを検知しました。ネットワーク接続を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="305"/>
+        <location filename="tmisc.cpp" line="307"/>
         <source>Network is unreachable. check network connection.</source>
         <translation>ネットワーク到達不能を検知しました。ネットワーク接続を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="306"/>
+        <location filename="tmisc.cpp" line="308"/>
         <source>Network is reset. check network connection.</source>
         <translation>ネットワークリセットを検知しました。ネットワーク接続を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="307"/>
+        <location filename="tmisc.cpp" line="309"/>
         <source>Network connection is aborted. check network connection.</source>
         <translation>ネットワークコネクション断を検知しました。ネットワーク接続を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="308"/>
+        <location filename="tmisc.cpp" line="310"/>
         <source>Network connection is reset. check network connection.</source>
         <translation>ネットワークリセットを検知しました。ネットワーク接続を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="309"/>
+        <location filename="tmisc.cpp" line="311"/>
         <source>No socket buffer space available. check system socket buffer.</source>
         <translation>ネットワークソケット用バッファ枯渇を検知しました。ソケット用バッファの状況を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="310"/>
+        <location filename="tmisc.cpp" line="312"/>
         <source>Time out detected. check network connection or target system.</source>
         <oldsource>Time out detected. check network connection.</oldsource>
         <translation>タイムアウトを検知しました。ネットワーク環境や相手システムが正常か確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="311"/>
+        <location filename="tmisc.cpp" line="313"/>
         <source>Too many levels of symbolic links. check loop symbolic link or MAXSIMLINKS.</source>
         <translation>解決不能なシンボリックリンクを検出しました。ループしていないか、またはMAXSIMLINKSシステム定義値を確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="312"/>
+        <location filename="tmisc.cpp" line="314"/>
         <source>File name too long. check file path.</source>
         <translation>ファイル名が長過ぎます。正常なファイル名かどうか確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="313"/>
+        <location filename="tmisc.cpp" line="315"/>
         <source>Detected a write to disk quota limit. Please check the quota.</source>
         <translation>ディスククオータ制限です。クオータによる制限がないか確認してください。</translation>
     </message>
@@ -2426,17 +2428,17 @@ Don&apos;t put a &apos;/&apos; at the end, copy the data directly below the sour
         <translation type="vanished">対象のシステムコールが存在しません。作者にレポートを送付してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="315"/>
+        <location filename="tmisc.cpp" line="317"/>
         <source>EA data not found. check file have EA or file system type.</source>
         <translation>EAデータが見つかりませんでした。ファイルシステムがEAをサポートしているか確認してください。</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="318"/>
+        <location filename="tmisc.cpp" line="320"/>
         <source>Notice: EA has been lost.</source>
         <translation>注意:EAはコピーされません</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="319"/>
+        <location filename="tmisc.cpp" line="321"/>
         <source>Notice: ACL has been lost.</source>
         <translation>注意:ACLはコピーされません</translation>
     </message>
@@ -2481,127 +2483,134 @@ Please refer to help for details. pushing the ? button.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="135"/>
+        <location filename="tmisc.cpp" line="130"/>
+        <source>Too large or small Main Buffer.
+ need %dMB or over and under 2047MB</source>
+        <translation>メインバッファのサイズが小さすぎるか大きすぎます。
+最低でも%dM以上かつ2047以下の値を指定してください</translation>
+    </message>
+    <message>
+        <location filename="tmisc.cpp" line="136"/>
         <source>noe</source>
         <translation>noe</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="136"/>
+        <location filename="tmisc.cpp" line="137"/>
         <source>dif</source>
         <translation>dif</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="137"/>
+        <location filename="tmisc.cpp" line="138"/>
         <source>upd</source>
         <translation>upd</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="138"/>
+        <location filename="tmisc.cpp" line="139"/>
         <source>for</source>
         <translation>for</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="139"/>
+        <location filename="tmisc.cpp" line="140"/>
         <source>syn</source>
         <translation>syn</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="140"/>
+        <location filename="tmisc.cpp" line="141"/>
         <source>mut</source>
         <translation>mut</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="141"/>
+        <location filename="tmisc.cpp" line="142"/>
         <source>mov</source>
         <translation>mov</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="142"/>
+        <location filename="tmisc.cpp" line="143"/>
         <source>del</source>
         <translation>del</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="143"/>
+        <location filename="tmisc.cpp" line="144"/>
         <source>cmd</source>
         <translation>cmd</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="145"/>
+        <location filename="tmisc.cpp" line="146"/>
         <source>bufsize</source>
         <translation>bufsize</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="146"/>
+        <location filename="tmisc.cpp" line="147"/>
         <source>error_stop</source>
         <translation>error_stop</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="147"/>
+        <location filename="tmisc.cpp" line="148"/>
         <source>open_window</source>
         <translation>open_window</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="148"/>
+        <location filename="tmisc.cpp" line="149"/>
         <source>auto_close</source>
         <translation>auto_close</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="149"/>
+        <location filename="tmisc.cpp" line="150"/>
         <source>force_close</source>
         <translation>force_close</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="150"/>
+        <location filename="tmisc.cpp" line="151"/>
         <source>no_exec</source>
         <translation>no_exec</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="151"/>
+        <location filename="tmisc.cpp" line="152"/>
         <source>no_confirm_del</source>
         <translation>no_confirm_del</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="152"/>
+        <location filename="tmisc.cpp" line="153"/>
         <source>log</source>
         <translation>log</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="153"/>
+        <location filename="tmisc.cpp" line="154"/>
         <source>to</source>
         <translation>to</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="154"/>
+        <location filename="tmisc.cpp" line="155"/>
         <source>estimate</source>
         <translation>estimate</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="155"/>
+        <location filename="tmisc.cpp" line="156"/>
         <source>job</source>
         <translation>job</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="156"/>
+        <location filename="tmisc.cpp" line="157"/>
         <source>auto_slow</source>
         <translation>auto_slow</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="157"/>
+        <location filename="tmisc.cpp" line="158"/>
         <source>speed</source>
         <translation>speed</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="159"/>
+        <location filename="tmisc.cpp" line="160"/>
         <source>ver</source>
         <translation>ver</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="160"/>
+        <location filename="tmisc.cpp" line="161"/>
         <source>joblist</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="161"/>
+        <location filename="tmisc.cpp" line="162"/>
         <source>siz</source>
         <translation>siz</translation>
     </message>
@@ -2610,7 +2619,7 @@ Please refer to help for details. pushing the ? button.</source>
         <translation type="vanished">ジョブを削除します。よろしいですか？</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="259"/>
+        <location filename="tmisc.cpp" line="260"/>
         <source>Illegal option: --joblist Specified JobList can&apos;t be found
 </source>
         <translation></translation>
@@ -2620,47 +2629,47 @@ Please refer to help for details. pushing the ? button.</source>
         <translation type="vanished">デフォルト</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="164"/>
+        <location filename="tmisc.cpp" line="165"/>
         <source>include</source>
         <translation>include</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="165"/>
+        <location filename="tmisc.cpp" line="166"/>
         <source>exclude</source>
         <translation>exclude</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="166"/>
+        <location filename="tmisc.cpp" line="167"/>
         <source>force_start</source>
         <translation>force_start</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="167"/>
+        <location filename="tmisc.cpp" line="168"/>
         <source>skip_empty_dir</source>
         <translation>skip_empty_dir</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="168"/>
+        <location filename="tmisc.cpp" line="169"/>
         <source>disk_mode</source>
         <translation>disk_mode</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="169"/>
+        <location filename="tmisc.cpp" line="170"/>
         <source>same</source>
         <translation>same</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="170"/>
+        <location filename="tmisc.cpp" line="171"/>
         <source>diff</source>
         <translation>diff</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="171"/>
+        <location filename="tmisc.cpp" line="172"/>
         <source>auto</source>
         <translation>auto</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="172"/>
+        <location filename="tmisc.cpp" line="173"/>
         <source>acl</source>
         <translation>acl</translation>
     </message>
@@ -2669,173 +2678,173 @@ Please refer to help for details. pushing the ? button.</source>
         <translation type="vanished">ea</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="174"/>
+        <location filename="tmisc.cpp" line="175"/>
         <source>overwrite_del</source>
         <translation>overwrite_del</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="175"/>
+        <location filename="tmisc.cpp" line="176"/>
         <source>full</source>
         <translation>full</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="176"/>
+        <location filename="tmisc.cpp" line="177"/>
         <source>autoslow</source>
         <translation>autoslow</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="177"/>
+        <location filename="tmisc.cpp" line="178"/>
         <source>suspend</source>
         <translation>suspend</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="178"/>
+        <location filename="tmisc.cpp" line="179"/>
         <source>reparse</source>
         <translation>reparse</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="179"/>
+        <location filename="tmisc.cpp" line="180"/>
         <source>runas</source>
         <translation>runas</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="181"/>
+        <location filename="tmisc.cpp" line="182"/>
         <source>logfile</source>
         <translation>logfile</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="182"/>
+        <location filename="tmisc.cpp" line="183"/>
         <source>no_confirm_stop</source>
         <translation>no_confirm_stop</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="183"/>
+        <location filename="tmisc.cpp" line="184"/>
         <source>verify</source>
         <translation>verify</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="185"/>
+        <location filename="tmisc.cpp" line="186"/>
         <source>wipe_del</source>
         <translation>wipe_del</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="186"/>
+        <location filename="tmisc.cpp" line="187"/>
         <source>srcfile</source>
         <translation>srcfile</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="188"/>
+        <location filename="tmisc.cpp" line="189"/>
         <source>postproc</source>
         <translation>postproc</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="190"/>
+        <location filename="tmisc.cpp" line="191"/>
         <source>linkdest</source>
         <translation>linkdest</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="191"/>
+        <location filename="tmisc.cpp" line="192"/>
         <source>recreate</source>
         <translation>recreate</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="192"/>
+        <location filename="tmisc.cpp" line="193"/>
         <source>from_date</source>
         <translation>from_date</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="193"/>
+        <location filename="tmisc.cpp" line="194"/>
         <source>to_date</source>
         <translation>to_date</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="194"/>
+        <location filename="tmisc.cpp" line="195"/>
         <source>min_size</source>
         <translation>min_size</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="195"/>
+        <location filename="tmisc.cpp" line="196"/>
         <source>max_size</source>
         <translation>max_size</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="199"/>
+        <location filename="tmisc.cpp" line="200"/>
         <source>filelog</source>
         <translation>filelog</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="200"/>
+        <location filename="tmisc.cpp" line="201"/>
         <source>true</source>
         <translation>true</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="201"/>
+        <location filename="tmisc.cpp" line="202"/>
         <source>false</source>
         <translation>false</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="202"/>
+        <location filename="tmisc.cpp" line="203"/>
         <source>%04d%02d%02d-%02d%02d%02d-%d%s.log</source>
         <oldsource>%04d%02d%02d-%02d%02d%02d-%d.log</oldsource>
         <translation>%04d%02d%02d-%02d%02d%02d-%d%s.log</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="203"/>
+        <location filename="tmisc.cpp" line="204"/>
         <source>Log</source>
         <translation>Log</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="205"/>
+        <location filename="tmisc.cpp" line="206"/>
         <source>md5</source>
         <translation>md5</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="206"/>
+        <location filename="tmisc.cpp" line="207"/>
         <source>sh1</source>
         <translation>sh1</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="207"/>
+        <location filename="tmisc.cpp" line="208"/>
         <source>xxh</source>
         <translation>xxh</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="208"/>
+        <location filename="tmisc.cpp" line="209"/>
         <source>s22</source>
         <translation>s22</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="209"/>
+        <location filename="tmisc.cpp" line="210"/>
         <source>s25</source>
         <translation>s25</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="210"/>
+        <location filename="tmisc.cpp" line="211"/>
         <source>s32</source>
         <translation>s32</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="211"/>
+        <location filename="tmisc.cpp" line="212"/>
         <source>s35</source>
         <translation>s35</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="212"/>
+        <location filename="tmisc.cpp" line="213"/>
         <source>fnocache</source>
         <translation>fnocache</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="213"/>
+        <location filename="tmisc.cpp" line="214"/>
         <source>ltfs</source>
         <translation>ltfs</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="214"/>
+        <location filename="tmisc.cpp" line="215"/>
         <source>fal</source>
         <translation>fal</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="219"/>
+        <location filename="tmisc.cpp" line="220"/>
         <source>OpCode1,OpCode2,OpCode3,Destination Path,Checksum,FinishTime,FileSize(Byte),Error
 </source>
         <oldsource>OpCode1,OpCode2,OpCode3,Destination Path,Digest,FinishTime,FileSize(Byte),Error
@@ -2844,7 +2853,7 @@ Please refer to help for details. pushing the ? button.</source>
 </translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="220"/>
+        <location filename="tmisc.cpp" line="221"/>
         <source>OpCode Reference:
 OpCode1:(A=Add R=Delete V=Verify E=Error)
 OpCode2:(N=Normal S=Symboliclink H=Hardlink )
@@ -2856,27 +2865,27 @@ OpCode2:(N=ノーマル S=シンボリックリンク H=ハードリンク)
 OpCode3:(F=ファイル D=フォルダ(ディレクトリ))</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="221"/>
+        <location filename="tmisc.cpp" line="222"/>
         <source>filecsv</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="223"/>
+        <location filename="tmisc.cpp" line="224"/>
         <source>Full Speed</source>
         <translation>Full Speed</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="224"/>
+        <location filename="tmisc.cpp" line="225"/>
         <source>Auto Slow</source>
         <translation>Auto Slow</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="225"/>
+        <location filename="tmisc.cpp" line="226"/>
         <source>Suspend</source>
         <translation>Suspend</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="226"/>
+        <location filename="tmisc.cpp" line="227"/>
         <source>%d</source>
         <translation>%d</translation>
     </message>
@@ -2885,7 +2894,7 @@ OpCode3:(F=ファイル D=フォルダ(ディレクトリ))</translation>
         <translation type="obsolete">ACLエラーをログに記録する</translation>
     </message>
     <message>
-        <location filename="tmisc.cpp" line="322"/>
+        <location filename="tmisc.cpp" line="324"/>
         <source>Nothing to use!!!!!</source>
         <translation>unused</translation>
     </message>
@@ -3002,6 +3011,7 @@ OpCode3:(F=ファイル D=フォルダ(ディレクトリ))</translation>
     </message>
     <message>
         <location filename="mainsettingdialog.ui" line="86"/>
+        <location filename="mainsettingdialog.ui" line="480"/>
         <source>I/O Settings</source>
         <translation>I/O設定</translation>
     </message>
@@ -3063,23 +3073,59 @@ OpCode3:(F=ファイル D=フォルダ(ディレクトリ))</translation>
         <translation>ジョブリストモードを常に表示する</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="532"/>
+        <location filename="mainsettingdialog.ui" line="627"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Default:1MB unit and Overlap = 1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <oldsource>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tips:16MB unit and OverLap = 8 normally better in 10G env.&lt;/p&gt;&lt;p&gt;Default:8MB unit and Overlap = 1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;デフォルト値:1MB*1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="mainsettingdialog.ui" line="467"/>
         <source>Checksum algorithm</source>
         <translation>ベリファイ方式</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="582"/>
+        <location filename="mainsettingdialog.ui" line="543"/>
+        <source>AIO I/O num</source>
+        <translation>同時実行I/O数</translation>
+    </message>
+    <message>
+        <location filename="mainsettingdialog.ui" line="573"/>
+        <source>I/O Unit (MB)</source>
+        <translation>I/O単位(MB)</translation>
+    </message>
+    <message>
+        <location filename="mainsettingdialog.ui" line="602"/>
+        <source>MB(Total)</source>
+        <translation>MB(Total)</translation>
+    </message>
+    <message>
+        <location filename="mainsettingdialog.ui" line="620"/>
+        <source>=Max I/O size</source>
+        <translation>=Max I/O Size</translation>
+    </message>
+    <message>
+        <location filename="mainsettingdialog.ui" line="642"/>
         <source>Enable Readahead</source>
         <translation>先読み最適化を有効にする(Readahead)</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="648"/>
+        <location filename="mainsettingdialog.ui" line="681"/>
+        <source>Enable O_DIRECT(no use OS cache)</source>
+        <translation>O_DIRECT有効(OSキャッシュ無効)</translation>
+    </message>
+    <message>
+        <location filename="mainsettingdialog.ui" line="747"/>
         <source>Don&apos;t update dst file/dir date(Note:Overwrite target in Diff mode)</source>
         <oldsource>Don&apos;t update date(Note:Affects Diff mode. Read tech manual)</oldsource>
         <translation>コピー先の変更日を更新しない(差分コピー時、上書き対象になる)</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="826"/>
+        <location filename="mainsettingdialog.ui" line="760"/>
+        <source>If dst verify error occurs,don&apos;t save dump file (delete *.fc_verify_err)</source>
+        <translation>dstでのベリファイエラー発生時、.rc_verify_errを生成しない</translation>
+    </message>
+    <message>
+        <location filename="mainsettingdialog.ui" line="938"/>
         <source>Write to detailed CSV (Log/DATE.csv)</source>
         <translation>詳細CSVデータを記録する(Log/DATE.csv)</translation>
     </message>
@@ -3134,16 +3180,15 @@ OpCode3:(F=ファイル D=フォルダ(ディレクトリ))</translation>
         <translation type="vanished">&quot;.&quot;を無視</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="467"/>
         <source>Max I/O size (MB)</source>
-        <translation>最大I/O単位(MB)</translation>
+        <translation type="vanished">最大I/O単位(MB)</translation>
     </message>
     <message>
         <source>Verify mode</source>
         <translation type="vanished">ベリファイ方式</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="474"/>
+        <location filename="mainsettingdialog.ui" line="667"/>
         <source>Select hash algorithm.
 xxHash is an excellent in terms of CPU load and speed, but it is not suitable for data integrity evidence.
 For data integrity evidence, You should use &quot;MD5&quot; or others.</source>
@@ -3151,12 +3196,12 @@ For data integrity evidence, You should use &quot;MD5&quot; or others.</source>
 xxHashが最もCPU使用率が低く高速ですが、チェックサム用にはMD5を選択する方が良いでしょう。</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="557"/>
+        <location filename="mainsettingdialog.ui" line="654"/>
         <source>collect stat(for debug)</source>
         <translation>統計情報を取得(デバッグ用)</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="513"/>
+        <location filename="mainsettingdialog.ui" line="523"/>
         <source>Set the request size at the time of data read/write.
 If you are doing the ultra-high-speed network connection(such as 10G Ether). you may want to set the 4-8.</source>
         <oldsource>Set the request size at the time of data read/write.
@@ -3165,38 +3210,37 @@ If you are doing the ultra-high-speed connection(such as 10G Ether) you may want
 10Gネットワーク等の超高速ネットワーク接続の場合は4-8に設定すると、速度が向上する事があります。</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="488"/>
         <source>Use Async I/O(for debug)</source>
-        <translation>非同期I/Oを使用(デバッグ用)</translation>
+        <translation type="vanished">非同期I/Oを使用(デバッグ用)</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="627"/>
+        <location filename="mainsettingdialog.ui" line="726"/>
         <source>Move one by one</source>
         <translation>移動を逐次方式に</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="603"/>
+        <location filename="mainsettingdialog.ui" line="702"/>
         <source>Change &quot;Move(Overwrite all)&quot; to &quot;Move(Date/Size)&quot;</source>
         <translation>「移動(全上書き)」を「移動(日付・サイズ)」に変更</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="620"/>
+        <location filename="mainsettingdialog.ui" line="719"/>
         <source>Use modified name,if destdir same as src&apos;s parent.</source>
         <translation>コピー元の同一フォルダへのコピーはリネームして動作継続</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="596"/>
+        <location filename="mainsettingdialog.ui" line="695"/>
         <source>Don&apos;t create empty directory, if &quot;Show Filter&quot; is checked.</source>
         <oldsource>Don&apos;t create empty directory, if &quot;&quot;Filter&quot;&quot; is checked.</oldsource>
         <translation>フィルター機能使用時、空フォルダは作成しない</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="610"/>
+        <location filename="mainsettingdialog.ui" line="709"/>
         <source>Copy Symlink as Symlink (not target)</source>
         <translation>シンボリックリンクをリンクとしてコピー</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="641"/>
+        <location filename="mainsettingdialog.ui" line="740"/>
         <source>Move one by one (verify mode)</source>
         <translation>移動を逐次方式に(ベリファイ時)</translation>
     </message>
@@ -3205,57 +3249,57 @@ If you are doing the ultra-high-speed connection(such as 10G Ether) you may want
         <translation type="vanished">LTFSモード</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="634"/>
+        <location filename="mainsettingdialog.ui" line="733"/>
         <source>skip &quot;.&quot; start file or folder</source>
         <translation>&quot;.&quot;から始まるファイルやフォルダを無視する</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="665"/>
+        <location filename="mainsettingdialog.ui" line="777"/>
         <source>Use NSA method for Wipe &amp;&amp; Delete option (very slow)</source>
         <translation>復元無効化にNSA方式を使用(非常に遅くなります)</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="675"/>
+        <location filename="mainsettingdialog.ui" line="787"/>
         <source>Try to delete directory, if &quot;Show Filter&quot; is checked.</source>
         <oldsource>Try to delete directory, if &quot;Filter&quot; is checked.</oldsource>
         <translation>フィルタ機能指定での削除時にも、フォルダ削除を試みる</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="738"/>
+        <location filename="mainsettingdialog.ui" line="850"/>
         <source>Number of history items for Src/DestDir (need to restart)</source>
         <translation>Source/Destdirの履歴数(再起動後に有効)</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="802"/>
+        <location filename="mainsettingdialog.ui" line="914"/>
         <source>Write ACL errors to Log</source>
         <oldsource>Write ACL errors to Error Log</oldsource>
         <translation>ACL関連エラーをログに記録する</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="753"/>
+        <location filename="mainsettingdialog.ui" line="865"/>
         <source>Write to Log (RapidCopy.log)</source>
         <oldsource>Write to Error Log (RapidCopy.log)</oldsource>
         <translation>標準ログに記録を行う(RapidCopy.log)</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="765"/>
+        <location filename="mainsettingdialog.ui" line="877"/>
         <source>Write to detailed Log (Log/DATE.log)</source>
         <oldsource>Write to File Log (Log/DATE.log)</oldsource>
         <translation>詳細ファイルログを記録する(Log/DATE.log)</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="814"/>
+        <location filename="mainsettingdialog.ui" line="926"/>
         <source>Write EA(xattr) errors to Log</source>
         <oldsource>Write xattr errors to Log</oldsource>
         <translation>EA(xattr)関連エラーをログに記録する</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="872"/>
+        <location filename="mainsettingdialog.ui" line="984"/>
         <source>Don&apos;t wait for other running RapidCopy to finish</source>
         <translation>他のRapidCopyが動作中の場合でも直ちに実行開始する</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="1007"/>
+        <location filename="mainsettingdialog.ui" line="1119"/>
         <source>Don&apos;t use system tray at minimizing</source>
         <translation>最小化時、システムトレイに常駐しない</translation>
     </message>
@@ -3264,22 +3308,22 @@ If you are doing the ultra-high-speed connection(such as 10G Ether) you may want
         <translation type="vanished">&quot;新しいウインドウを開く&quot;の実行時、SrcとDestの内容をクリアする</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="910"/>
+        <location filename="mainsettingdialog.ui" line="1022"/>
         <source>Info Update Span</source>
         <translation>表示更新間隔</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="960"/>
+        <location filename="mainsettingdialog.ui" line="1072"/>
         <source>250ms</source>
         <translation>250ms</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="973"/>
+        <location filename="mainsettingdialog.ui" line="1085"/>
         <source>500ms</source>
         <translation>500ms</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="986"/>
+        <location filename="mainsettingdialog.ui" line="1098"/>
         <source>1000ms</source>
         <translation>1000ms</translation>
     </message>
@@ -3288,12 +3332,12 @@ If you are doing the ultra-high-speed connection(such as 10G Ether) you may want
         <translation type="vanished">他のRapidCopyが動作中の場合でも直ちに実行開始する</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="888"/>
+        <location filename="mainsettingdialog.ui" line="1000"/>
         <source>Confirm before execute</source>
         <translation>実行前に確認ダイアログを表示する</translation>
     </message>
     <message>
-        <location filename="mainsettingdialog.ui" line="859"/>
+        <location filename="mainsettingdialog.ui" line="971"/>
         <source>English UI (need to restart)</source>
         <translation>英語UI(再起動後に有効)</translation>
     </message>

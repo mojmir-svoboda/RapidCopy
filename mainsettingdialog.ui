@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>634</width>
-    <height>208</height>
+    <width>656</width>
+    <height>351</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>634</width>
-    <height>208</height>
+    <width>800</width>
+    <height>400</height>
    </size>
   </property>
   <property name="font">
@@ -145,7 +145,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="stackedWidgetPage_genaral">
         <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0">
@@ -450,79 +450,14 @@
        </widget>
        <widget class="QWidget" name="stackedWidgetPage_IO">
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_Iosize">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Max I/O size (MB)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox_VerifyMode">
-           <property name="toolTip">
-            <string>Select hash algorithm.
-xxHash is an excellent in terms of CPU load and speed, but it is not suitable for data integrity evidence.
-For data integrity evidence, You should use &quot;MD5&quot; or others.</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QCheckBox" name="checkBox_aio">
-           <property name="font">
-            <font>
-             <pointsize>11</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Use Async I/O(for debug)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit_Iomax">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>50</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string>Set the request size at the time of data read/write.
-If you are doing the ultra-high-speed network connection(such as 10G Ether). you may want to set the 4-8.</string>
-           </property>
-           <property name="inputMethodHints">
-            <set>Qt::ImhDigitsOnly</set>
-           </property>
-           <property name="maxLength">
-            <number>4</number>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_VerifyMode">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <pointsize>12</pointsize>
@@ -533,18 +468,180 @@ If you are doing the ultra-high-speed network connection(such as 10G Ether). you
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+         <item row="0" column="0" colspan="2">
+          <widget class="QGroupBox" name="groupBox_settings">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
+           <property name="title">
+            <string>I/O Settings</string>
            </property>
-          </spacer>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="5" column="3">
+             <widget class="QLineEdit" name="lineEdit_totaliosize">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLineEdit" name="lineEdit_Iomax">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>50</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Set the request size at the time of data read/write.
+If you are doing the ultra-high-speed network connection(such as 10G Ether). you may want to set the 4-8.</string>
+              </property>
+              <property name="inputMethodHints">
+               <set>Qt::ImhDigitsOnly</set>
+              </property>
+              <property name="maxLength">
+               <number>4</number>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_aionum">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+                <kerning>true</kerning>
+               </font>
+              </property>
+              <property name="text">
+               <string>AIO I/O num</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_Iosize">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>120</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>I/O Unit (MB)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLineEdit" name="lineEdit_aionum">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="inputMethodHints">
+               <set>Qt::ImhDigitsOnly</set>
+              </property>
+              <property name="maxLength">
+               <number>2</number>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="4">
+             <widget class="QLabel" name="label_totaliosize">
+              <property name="text">
+               <string>MB(Total)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="2">
+             <widget class="QLabel" name="label_totalio">
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>=Max I/O size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0" colspan="4">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Default:1MB unit and Overlap = 1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QCheckBox" name="checkBox_Rdahead">
+           <property name="font">
+            <font>
+             <pointsize>11</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Enable Readahead</string>
+           </property>
+          </widget>
          </item>
          <item row="2" column="0">
           <widget class="QCheckBox" name="checkBox_rwstat">
@@ -558,28 +655,30 @@ If you are doing the ultra-high-speed network connection(such as 10G Ether). you
            </property>
           </widget>
          </item>
-         <item row="0" column="3">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBox_VerifyMode">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
+           <property name="toolTip">
+            <string>Select hash algorithm.
+xxHash is an excellent in terms of CPU load and speed, but it is not suitable for data integrity evidence.
+For data integrity evidence, You should use &quot;MD5&quot; or others.</string>
            </property>
-          </spacer>
+          </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QCheckBox" name="checkBox_Rdahead">
+         <item row="4" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBox_O_DIRECT">
            <property name="font">
             <font>
              <pointsize>11</pointsize>
             </font>
            </property>
            <property name="text">
-            <string>Enable Readahead</string>
+            <string>Enable O_DIRECT(no use OS cache)</string>
            </property>
           </widget>
          </item>
@@ -646,6 +745,19 @@ If you are doing the ultra-high-speed network connection(such as 10G Ether). you
           <widget class="QCheckBox" name="checkBox_Noutime">
            <property name="text">
             <string>Don't update dst file/dir date(Note:Overwrite target in Diff mode)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QCheckBox" name="checkBox_Dumpdel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>If dst verify error occurs,don't save dump file (delete *.fc_verify_err)</string>
            </property>
           </widget>
          </item>
@@ -1044,10 +1156,8 @@ If you are doing the ultra-high-speed network connection(such as 10G Ether). you
   <tabstop>slider_Speed</tabstop>
   <tabstop>checkBox_Owdel</tabstop>
   <tabstop>checkBox_ShowExtend</tabstop>
-  <tabstop>lineEdit_Iomax</tabstop>
   <tabstop>comboBox_VerifyMode</tabstop>
   <tabstop>checkBox_rwstat</tabstop>
-  <tabstop>checkBox_aio</tabstop>
   <tabstop>checkBox_Samedir</tabstop>
   <tabstop>checkBox_Nocreate</tabstop>
   <tabstop>checkBox_Symlink</tabstop>

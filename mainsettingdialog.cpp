@@ -33,11 +33,8 @@ mainsettingDialog::mainsettingDialog(QWidget *parent,Cfg *cfg_pt) :
         ui->comboBox_VerifyMode->addItem((char*)GetLoadStrV(VERIFYINFO_LIST[i].resId));
     }
 
-    //test
     ui->checkBox_rwstat->setEnabled(false);
     ui->checkBox_rwstat->setVisible(false);
-    ui->checkBox_aio->setEnabled(false);
-    ui->checkBox_aio->setVisible(false);
     GetData();
     ui->general_optionlist->setCurrentRow(0);
 
@@ -71,7 +68,8 @@ BOOL mainsettingDialog::GetData()
 
     //I/O settings
     ui->lineEdit_Iomax->setText(QString::number(cfg->maxTransSize));
-    //ui->checkBox_Rdahead->setChecked(cfg->enableReadahead);
+    ui->lineEdit_aionum->setText(QString::number(cfg->maxAionum));
+    ui->checkBox_O_DIRECT->setChecked(cfg->enableOdirect);
 
     //Copy/Move Options
     ui->checkBox_Samedir->setChecked(cfg->isSameDirRename);
@@ -81,6 +79,7 @@ BOOL mainsettingDialog::GetData()
     ui->checkBox_Moveone->setChecked(cfg->serialMove);
     ui->checkBox_Moveone_verify->setChecked(cfg->serialVerifyMove);
     ui->checkBox_Noutime->setChecked(cfg->isDisableutime);
+    ui->checkBox_Dumpdel->setChecked(cfg->enableVerifyErrDel);
 
     //Delete Options
     ui->checkBox_NSA->setChecked(cfg->enableNSA);
@@ -120,7 +119,6 @@ BOOL mainsettingDialog::GetData()
     ui->checkBox_EnglishUI->setChecked(cfg->lcid == QLocale::Japanese ? false : true);
     ui->comboBox_VerifyMode->setCurrentIndex(cfg->usingMD5);
     ui->checkBox_rwstat->setChecked(cfg->rwstat);
-    ui->checkBox_aio->setChecked(cfg->async);
     return	TRUE;
 }
 
@@ -162,7 +160,8 @@ BOOL mainsettingDialog::SetData()
 
     //I/O settings
     cfg->maxTransSize = ui->lineEdit_Iomax->text().toInt();
-    //cfg->enableReadahead = ui->checkBox_Rdahead->checkState();
+    cfg->maxAionum = ui->lineEdit_aionum->text().toInt();
+    cfg->enableOdirect = ui->checkBox_O_DIRECT->checkState();
 
     //Copy/Move Options
     cfg->isSameDirRename = ui->checkBox_Samedir->checkState();
@@ -174,6 +173,7 @@ BOOL mainsettingDialog::SetData()
     cfg->enableLTFS = ui->checkBox_LTFS->checkState();
     cfg->Dotignore_mode = ui->checkBox_Dotignore->checkState();
     cfg->isDisableutime = ui->checkBox_Noutime->checkState();
+    cfg->enableVerifyErrDel = ui->checkBox_Dumpdel->checkState();
 
     //Delete Options
     cfg->enableNSA = ui->checkBox_NSA->checkState();
@@ -206,7 +206,6 @@ BOOL mainsettingDialog::SetData()
     cfg->lcid = ui->checkBox_EnglishUI->checkState() ? QLocale::English : QLocale::Japanese;
     cfg->usingMD5 = ui->comboBox_VerifyMode->currentIndex();
     cfg->rwstat = ui->checkBox_rwstat->checkState();
-    cfg->async = ui->checkBox_aio->checkState();
     return	TRUE;
 }
 
@@ -249,4 +248,18 @@ void mainsettingDialog::on_checkBox_Filelog_stateChanged(int arg1)
         default:
                 break;
     }
+}
+
+void mainsettingDialog::on_lineEdit_Iomax_textChanged(const QString &arg1)
+{
+    int iosize = arg1.toInt();
+    int olap = ui->lineEdit_aionum->text().toInt();
+    ui->lineEdit_totaliosize->setText(QString::number(iosize*olap));
+}
+
+void mainsettingDialog::on_lineEdit_aionum_textChanged(const QString &arg1)
+{
+    int olap = arg1.toInt();
+    int iosize = ui->lineEdit_Iomax->text().toInt();
+    ui->lineEdit_totaliosize->setText(QString::number(iosize*olap));
 }

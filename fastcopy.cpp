@@ -14,9 +14,9 @@
 #include <QApplication>
 #include <QElapsedTimer>
 #include <dirent.h>
+
 #include <fcntl.h>
 #include <semaphore.h>
-#include <aio.h>
 #include <linux/magic.h>
 
 const char *FMT_RENAME_V;		// ".%03d"
@@ -25,6 +25,7 @@ const char *FMT_PUTCSV_V;		//csvデータ出力用
 const char *FMT_PUTERRCSV_V;	//csvエラーメッセージ出力用
 const char *FMT_STRNL_V;
 const char *FMT_REDUCEMSG_V;
+const char *FMT_REDUCEAIOMSG;
 const char *PLSTR_LINK_V;
 const char *PLSTR_REPARSE_V;
 const char *PLSTR_REPDIR_V;
@@ -73,6 +74,7 @@ static FsTable fstable [] = {
     {FastCopy::FSTYPE_NFS,			NFS_SUPER_MAGIC,	FSLOGNAME_NFS},
     {FastCopy::FSTYPE_REISERFS,		REISERFS_SUPER_MAGIC,FSLOGNAME_REISERFS},
     {FastCopy::FSTYPE_SMB,			SMB_SUPER_MAGIC,	FSLOGNAME_SMBFS},
+    {FastCopy::FSTYPE_SMB2,			SMB2_SUPER_MAGIC,   FSLOGNAME_SMB2FS},
     {FastCopy::FSTYPE_CIFS,			CIFS_MAGIC_NUMBER,	FSLOGNAME_CIFS},
     {FastCopy::FSTYPE_FUSE,			FUSE_SUPER_MAGIC,	FSLOGNAME_FUSE},
     {FastCopy::FSTYPE_HFS,			HFS_SUPER_MAGIC,	FSLOGNAME_HFS},
@@ -83,6 +85,27 @@ static FsTable fstable [] = {
     {-1,-1,""}
 };
 
+static inline int io_setup(unsigned nr_events, aio_context_t *ctxp)
+{
+    return syscall(__NR_io_setup, nr_events, ctxp);
+}
+
+static inline int io_getevents(aio_context_t ctx, long min_nr, long nr,
+                   struct io_event *events,
+                   struct timespec *timeout)
+{
+    return syscall(__NR_io_getevents, ctx, min_nr, nr, events, timeout);
+}
+
+static inline int io_submit(aio_context_t ctx, long nr, struct iocb **iocbpp)
+{
+    return syscall(__NR_io_submit, ctx, nr, iocbpp);
+}
+
+static inline int io_cancel(aio_context_t ctx, struct iocb *iocbp, struct io_event *event)
+{
+    return syscall(__NR_io_cancel, ctx, iocbp, event);
+}
 
 /*=========================================================================
   クラス ： FastCopy
@@ -94,7 +117,7 @@ FastCopy::FastCopy()
 {
     hReadThread_c = hWriteThread_c = hRDigestThread_c = hWDigestThread_c = NULL;
 
-    rapidcopy_semaphore = sem_open(FASTCOPY_MUTEX,O_CREAT,S_IRUSR|S_IWUSR,FASTCOPY_MUTEX_INSTANCE);
+    rapidcopy_semaphore = sem_open(FASTCOPY_MUTEX,O_CREAT,S_IRWXU|S_IRWXG|S_IRWXO,FASTCOPY_MUTEX_INSTANCE);
     if(rapidcopy_semaphore == SEM_FAILED){
         //qDebug() << "sem_open(CREATE) :" << errno;
     }
@@ -108,7 +131,8 @@ FastCopy::FastCopy()
     FMT_PUTCSV_V		= "%s,\"%s\",%s,%s,%s\n";
     FMT_PUTERRCSV_V		= "%s,\"%s\",,%s,,%s\n";
     FMT_STRNL_V			= "%s\n";
-    FMT_REDUCEMSG_V		= "Reduce MaxIO(%c) size (%dMB -> %dMB)";
+    FMT_REDUCEMSG_V		= "Reduce MaxIO(%s) size (%dMB -> %dMB)";
+    FMT_REDUCEAIOMSG	= "Reduce MaxAio(%s) size (aionum:%d -> %d)";
     PLSTR_LINK_V		= " =>";
     PLSTR_REPARSE_V 	= " ->";
     PLSTR_REPDIR_V  	= "/ ->";
@@ -181,15 +205,15 @@ FastCopy::FsType FastCopy::GetFsType(const void *root_dir,bool *isCaseSensitive,
 
 //機能:対象ファイルシステムへのread/writeサイズ要求を補正する。
 //返り値:補正後のread/write単位(Byte)
-int FastCopy::CompensentIO_size(int req_iosize,FastCopy::FsType src_fstype,FastCopy::FsType dst_fstype){
+int FastCopy::CompensentIO_size(int req_iosize,FastCopy::FsType fstype){
 
     int return_io_size = req_iosize;
 
-    //コピー元
-    switch(src_fstype){
+    switch(fstype){
         //こいつらは大きなread/write放り投げてもたぶん大丈夫
         case FSTYPE_NTFS:
         case FSTYPE_SMB:
+        case FSTYPE_SMB2:
         case FSTYPE_HFS:
         case FSTYPE_NFS:
         case FSTYPE_UDF:
@@ -217,10 +241,19 @@ int FastCopy::CompensentIO_size(int req_iosize,FastCopy::FsType src_fstype,FastC
             return_io_size = FASTCOPY_MINLIMITIOSIZE;
             break;
     }
-    //コピー先
-    switch(dst_fstype){
+    return return_io_size;
+}
+
+int FastCopy::CompensentAIO_num(int req_aionum,FastCopy::FsType fstype){
+
+    int return_aio_num = req_aionum;
+
+    //コピー元
+    switch(fstype){
+        //こいつらはaio投げても大丈夫
         case FSTYPE_NTFS:
         case FSTYPE_SMB:
+        case FSTYPE_SMB2:
         case FSTYPE_HFS:
         case FSTYPE_NFS:
         case FSTYPE_UDF:
@@ -232,23 +265,15 @@ int FastCopy::CompensentIO_size(int req_iosize,FastCopy::FsType src_fstype,FastC
         case FSTYPE_REISERFS:
         case FSTYPE_CIFS:
         case FSTYPE_XFS:
+        case FSTYPE_NONE:		//LTFSとかその他、把握しようもないけどとりあえず。
             break;
-        //1MBに強制ダウン対象
-        case FSTYPE_NONE:		//その他把握しようもないやつ。
-        case FSTYPE_ISOFS:
-        case FSTYPE_FAT:		//古いしなんとなく
-        case FSTYPE_ADFS:
-        case FSTYPE_AFS:
-        case FSTYPE_CODA:
-        case FSTYPE_FUSE:
-        case FSTYPE_JFS:
+
+        case FSTYPE_FAT:
         default:				//バグ
-            //古いのと実装が予想できないやつらは強制的に1MBにダウン
-            return_io_size = FASTCOPY_MINLIMITIOSIZE;
+            return_aio_num = FASTCOPY_LINUX_MINAIONUM;
             break;
     }
-    //qDebug() << "return_io_size = " << return_io_size;
-    return return_io_size;
+    return return_aio_num;
 }
 
 //機能:Xattrコピー機能が動作可能か判定する
@@ -269,6 +294,7 @@ bool FastCopy::IsXattrSupport(FastCopy::FsType src_fstype,FastCopy::FsType dst_f
         //CIFSに対してのxattrは対象システムのプロトコルスタックによって？
         //変換されることを期待する。(だめもと)
         case FSTYPE_SMB:
+        case FSTYPE_SMB2:
             break;
         //上記以外はxattrサポートないはずなので余計なことしないよ
         default:
@@ -311,6 +337,7 @@ bool FastCopy::IsAclSupport(FastCopy::FsType src_fstype,FastCopy::FsType dst_fst
         //CIFSに対してのACLはプロトコルスタックによって？
         //変換されることを期待する。(だめもと)
         case FSTYPE_SMB:
+        case FSTYPE_SMB2:
             break;
         //上記以外はaclサポートないはずなので余計なことしないよ
         default:
@@ -327,6 +354,7 @@ bool FastCopy::IsAclSupport(FastCopy::FsType src_fstype,FastCopy::FsType dst_fst
         case FSTYPE_XFS:
         case FSTYPE_NFS:
         case FSTYPE_SMB:
+        case FSTYPE_SMB2:
             break;
         //上記以外はaclサポートないはずなので余計なことしないよ
         default:
@@ -350,6 +378,33 @@ int FastCopy::GetSectorSize(const void *root_dir)
     }
 
     return ((int)fs_t.f_bsize);
+}
+
+int FastCopy::SetOptFlags(int fd,bool req_odirect,bool req_readopt,char* path,FastCopy::FsType fstype){
+    int flags = 0;
+    int org_flags = 0;
+    flags = fcntl(fd, F_GETFL);
+    org_flags = flags;
+    if(flags == SYSCALL_ERR){
+        //qDebug() << "F_GETFL error fd:" << fd << "path:" << path;
+        return SYSCALL_ERR;
+    }
+    if(req_odirect
+        && fstype != FSTYPE_CIFS
+        && fstype != FSTYPE_SMB
+        && fstype != FSTYPE_SMB2){
+        flags |= O_DIRECT;
+    }
+    if(req_readopt){
+        flags |= O_NOATIME;
+        if(posix_fadvise(fd,0,0,POSIX_FADV_SEQUENTIAL) != 0){
+            //qDebug() << "posix_fadvise(POSIX_FADV_SEQUENTIAL) error fd:" << fd << "path:" << path << "ret:" << fadvise_ret;
+        }
+    }
+    if(flags != org_flags && fcntl(fd, F_SETFL, flags) == SYSCALL_ERR){
+        //qDebug() << "F_SETFL() error fd:" << fd << "path:" << path << "odirect:" << req_odirect << "noatime" << req_readopt;
+    }
+    return 0;
 }
 
 //機能:同じ論理デバイスかどうかをチェックする。
@@ -438,8 +493,14 @@ BOOL FastCopy::InitDstPath(void)
     //各種ファイルシステム情報取得
     // セクタサイズ取得
     dstSectorSize = GetSectorSize(dst_root);
+    //qDebug() << "dstSectorSize:" << dstSectorSize;
     //ファイルシステムの取得
     dstFsType = GetFsType(dst_root,&dstCaseSense,dstFsName);
+
+    info.maxTransSize = CompensentIO_size(info.maxTransSize,dstFsType);
+    //dstがaio受け入れ不能な場合はコピー全体のaionumを強制的に落とす
+    info.maxAionum = CompensentAIO_num(info.maxAionum,dstFsType);
+
     //Linuxの場合は無条件にpreallocate有効
     info.flags_second |= ENABLE_PREALLOCATE;
     // 差分コピー用dst先ファイル確認
@@ -577,6 +638,14 @@ BOOL FastCopy::InitSrcPath(int idx)
         srcSectorSize = GetSectorSize(src_root_cur);
         srcFsType = GetFsType(src_root_cur,&srcCaseSense,srcFsName);
 
+        info.maxAionum = min(info.maxAionum,CompensentAIO_num(info.maxAionum,srcFsType));
+        info.maxTransSize = min(info.maxTransSize,CompensentIO_size(info.maxTransSize,srcFsType));
+
+        if(info.maxAionum > FASTCOPY_LINUX_MINAIONUM){
+            info.maxTransSize = min((info.defTransSize * info.defAionum),
+                                    (info.maxTransSize * info.maxAionum));
+        }
+
         sectorSize = max(srcSectorSize, dstSectorSize);		// 大きいほうに合わせる
         sectorSize = max(sectorSize, MIN_SECTOR_SIZE);
         // 同一物理ドライブかどうかの調査
@@ -606,6 +675,9 @@ BOOL FastCopy::InitSrcPath(int idx)
     isNonCSCopy = IsNoCaseSensitiveCopy(srcCaseSense,dstCaseSense);
 
     strcpyV(src_root, src_root_cur);
+
+    maxReadSize = maxWriteSize = maxDigestReadSize = info.maxTransSize;
+    maxReadAionum = maxWriteAionum = maxDigestReadAionum = info.maxAionum;
 
     // 最大転送サイズ
     DWORD tmpSize = isSameDrv ? info.bufSize : info.bufSize / 4;
@@ -655,7 +727,13 @@ BOOL FastCopy::InitDeletePath(int idx)
         if (info.flags & (OVERWRITE_DELETE|OVERWRITE_DELETE_NSA)) {
             dstSectorSize = GetSectorSize(dst_root);
             dstFsType = GetFsType(dst_root,&dstCaseSense,dstFsName);
-            //nbMinSize = dstFsType == FSTYPE_NTFS ? info.nbMinSizeNtfs : info.nbMinSizeFat;
+            info.maxAionum = min(info.maxAionum,CompensentAIO_num(info.maxAionum,dstFsType));
+            info.maxTransSize = min(info.maxTransSize,CompensentIO_size(info.maxTransSize,dstFsType));
+
+            if(info.maxAionum > FASTCOPY_LINUX_MINAIONUM){
+                info.maxTransSize = min((info.defTransSize * info.defAionum),
+                                        (info.maxTransSize * info.maxAionum));
+            }
         }
     }
 
@@ -677,8 +755,7 @@ BOOL FastCopy::InitDeletePath(int idx)
         strcpyV(confirmDst, dst);	// for renaming before deleting
 
         // 最大転送サイズ
-        maxWriteSize = min((DWORD)info.bufSize, maxWriteSize);
-        maxWriteSize = max(MIN_BUF, maxWriteSize);
+        maxWriteSize = max(MIN_BUF, info.maxTransSize);
     }
     
     if(fullpath != NULL){
@@ -700,14 +777,34 @@ BOOL FastCopy::RegisterInfo(const PathArray *_srcArray, const PathArray *_dstArr
     isListingOnly = (info.flags & LISTING_ONLY) ? TRUE : FALSE;
     isListing = (info.flags & LISTING) || isListingOnly ? TRUE : FALSE;
     endTick = 0;
+    ssize_t	neef_bufsize = info.maxTransSize;
 
     SetChar(src_root, 0, 0);
 
     //Listing時は事前予測強制OFFだが、VERIFYONLYモードでは特別に有効とする。
     if (isListingOnly && info.mode != VERIFY_MODE) info.flags &= ~PRE_SEARCH;
 
+
+    if(info.maxAionum > FASTCOPY_LINUX_MINAIONUM){
+        //ここではバッファ確保事前計算のために測っておく
+        //実際にできるかどうかはInitSrcPathで決まるよ
+        neef_bufsize = (info.maxTransSize * info.maxAionum * BUFIO_SIZERATIO);
+    }
+    else{
+        neef_bufsize = info.maxTransSize;
+    }
+
     // 最大転送サイズ上限（InitSrcPath で再設定）
-    maxReadSize = maxWriteSize = maxDigestReadSize = info.maxTransSize;
+    maxReadSize = maxWriteSize = maxDigestReadSize = neef_bufsize;
+
+    if (!isListingOnly &&
+            (info.mode != DELETE_MODE || (info.flags & (OVERWRITE_DELETE|OVERWRITE_DELETE_NSA))) &&
+            (info.bufSize < neef_bufsize || info.bufSize < MIN_BUF * 2
+             )) {
+        char msgbuf[512];
+        sprintfV(msgbuf, GetLoadStrV(IDS_SMALLBUF_ERR),(neef_bufsize * BUFIO_SIZERATIO) / 1024 / 1024);
+        return	ConfirmErr(msgbuf,NULL, CEF_STOP|CEF_NOAPI);
+    }
 
     // filter
     PathArray	pathArray[] = { *_includeArray, *_excludeArray };
@@ -1480,27 +1577,28 @@ BOOL FastCopy::PutStat(void* data){
     return	TRUE;
 }
 
-BOOL FastCopy::MakeDigest(void *path, VBuf *vbuf, TDigest *digest, BYTE *val, _int64 *fsize,FileStat *stat)
+BOOL FastCopy::MakeDigest(void *path, VBuf *vbuf, TDigest *digest, BYTE *val, _int64 *fsize,FileStat *stat,bool req_srcdigest)
 {
     int	flg = O_RDONLY;
 
     //win32のmodeフラグをF_NOCACHE指定指示に流用
-    int		mode = ((info.flags & USE_OSCACHE_READVERIFY) ? 0 : F_NOCACHE);
+    bool	is_nonbuf = (info.flags & USE_OSCACHE_READVERIFY) ? false : true;
 
     DWORD	share	= 0;
     BOOL	ret		= FALSE;
 
     memset(val, 0, digest->GetDigestSize());
 
-    int	hFile = CreateFileWithRetry(path, mode, share, 0, 0, flg, 0, 5);
+    int	hFile = open((const char*)path,flg,0777);
 
     digest->Reset();
 
     if (hFile == SYSCALL_ERR){
         return	FALSE;
     }
-    //読み込んだデータのキャッシュ破棄指示
-    posix_fadvise(hFile,0,0,POSIX_FADV_DONTNEED);
+    SetOptFlags(hFile,is_nonbuf ? true:false,
+                true,(char*)path,
+                req_srcdigest ? srcFsType : dstFsType);
 
     if ((DWORD)vbuf->Size() >= maxReadSize || vbuf->Grow(maxReadSize)) {
         struct stat	bhi;
@@ -1514,7 +1612,7 @@ BOOL FastCopy::MakeDigest(void *path, VBuf *vbuf, TDigest *digest, BYTE *val, _i
             CheckSuspend();
             while (remain_size > 0 && !isAbort) {
                 DWORD	trans_size = 0;
-                if (ReadFileWithReduce(hFile, vbuf->Buf(), maxReadSize, &trans_size, NULL)
+                if (ReadFileWithReduce(hFile, vbuf->Buf(), maxReadSize, &trans_size,true)
                 && trans_size > 0){
                     digest->Update(vbuf->Buf(), trans_size);
                     remain_size -= trans_size;
@@ -1563,10 +1661,10 @@ BOOL FastCopy::IsSameContents(FileStat *srcStat,FileStat *dstStat)
        //ここでdstreqにpostして、WriteThreadでのdstReadとdstDigest計算を開始
        DstRequest(DSTREQ_DIGEST);
     }
-    src_ret = MakeDigest(src, &srcDigestBuf, &srcDigest, srcDigestVal,NULL,srcStat);
+    src_ret = MakeDigest(src, &srcDigestBuf, &srcDigest, srcDigestVal,NULL,srcStat,true);
     //同一ドライブモードの場合はスレッド分ける意味ないのでカレントスレッドで計算。
     //このWaitDstRequest()でDstRequest()でポストしたwriteスレッドMakeDigest()との待ち合わせを行ってる。
-    dst_ret = isSameDrv ? MakeDigest(confirmDst, &dstDigestBuf, &dstDigest, dstDigestVal,NULL,dstStat) : WaitDstRequest();
+    dst_ret = isSameDrv ? MakeDigest(confirmDst, &dstDigestBuf, &dstDigest, dstDigestVal,NULL,dstStat,false) : WaitDstRequest();
     BOOL ret = src_ret && dst_ret && memcmp(srcDigestVal, dstDigestVal,
                 srcDigest.GetDigestSize()) == 0 ? TRUE : FALSE;
     if(ret){
@@ -1596,7 +1694,6 @@ BOOL FastCopy::IsSameContents(FileStat *srcStat,FileStat *dstStat)
                 case DIFFCP_MODE:
                 case SYNCCP_MODE:
                 case MOVE_MODE:
-                    unlink((char*)confirmDst);		//エラーは無視
                     break;
                     //その他のモードの場合は削除しない。
                 case VERIFY_MODE:
@@ -2903,22 +3000,9 @@ BOOL FastCopy::OpenFileProc(FileStat *stat, int dir_len)
 
     if(is_open){
 
-        int		mode = info.flags & USE_OSCACHE_READ ? 0 : F_NOCACHE;
+        bool is_nonbuf = (info.flags & USE_OSCACHE_READ) ? false : true;
+
         int	flg = 0;
-        //O_NOATIMEはNFSで利用しようとするとのちのread()でEPERMになってしまうので、NFSの場合はNOATIMEつけない
-        //SMB/CIFSでも同様みたいだし、致命的問題になりやすいから諦めるかあ
-        //OSX へのSMB接続でもしれっとFSTYPE_NONEになっちゃったりするし、statfsあてにならなさすぎるわあ。。
-        /*
-        if(srcFsType == FSTYPE_NFS || srcFsType == FSTYPE_CIFS
-            || srcFsType == FSTYPE_SMB || srcFsType == FSTYPE_FUSE
-            || srcFsType == FSTYPE_NONE){
-            flg |= O_RDONLY;
-        }
-        else{
-            flg |= O_RDONLY;
-            flg |= O_NOATIME;
-        }
-        */
         flg = O_RDONLY;
 
         if (is_reparse){
@@ -2932,12 +3016,9 @@ BOOL FastCopy::OpenFileProc(FileStat *stat, int dir_len)
             ret = FALSE;
         }
         else{
-
-            if(mode == F_NOCACHE){
-                //ファイルシステムキャッシュ無効要求しておく
-                //どうせ一回しかアクセスされないのにキャッシュする理由ないでしょ
-                posix_fadvise(stat->hFile,0,0,POSIX_FADV_DONTNEED);
-            }
+            SetOptFlags(stat->hFile,
+                        is_nonbuf ? true:false,
+                        true,(char*)src,srcFsType);
         }
     }
 
@@ -3216,93 +3297,178 @@ void *FastCopy::RestoreOpenFilePath(void *path, int idx, int dir_len)
     return	path;
 }
 
-BOOL FastCopy::ReadFileWithReduce(int hFile, void *buf, DWORD size, DWORD *reads, void *overwrap)
+BOOL FastCopy::ReadFileWithReduce(int hFile, void *buf, DWORD size, DWORD *reads,bool req_digest)
 {
-    DWORD	trans = 0;
+    off_t	trans = 0;
     DWORD	total = 0;
-    DWORD	maxReadSizeSv = maxReadSize;
+    bool	isaioerror = false;
+    DWORD	maxRSizeSv = req_digest ? maxDigestReadSize : maxReadSize;
+    DWORD	maxRAionumSv = req_digest ? maxDigestReadAionum : maxReadAionum;
 
-    struct	aiocb readlist[4];
-    DWORD	aio_pnum = sizeof(readlist) / sizeof(struct aiocb);
-    struct	aiocb *list[aio_pnum];		//実験用
-
+    DWORD	*maxRSize = req_digest ? &maxDigestReadSize : &maxReadSize;
+    DWORD	*maxRAionum = req_digest ? &maxDigestReadAionum : &maxReadAionum;
+    char	msgbuf[512];
     while ((trans = size - total) > 0) {
-        DWORD	transed = 0;
-        trans = min(trans, maxReadSize);
+        off_t transed = 0;
+        trans = min(trans, *maxRSize);
         //時間計測処理
         QElapsedTimer et;
         if(info.flags_second & STAT_MODE){
             et.start();
         }
+        if(*maxRAionum > FASTCOPY_MINLIMITIOSIZE && size == *maxRSize && !isaioerror){
 
-        //aio有効かつ要求バイトが同時io実行数以上？こっちはあくまで実験用のなごりだよ
-        /*
-        if(info.flags_second & FastCopy::ASYNCIO_MODE && (trans % aio_pnum) == 0){
-            memset(&readlist,0,(sizeof(struct aiocb) * aio_pnum));
-            //fdのカレントオフセット取得
+            QHash <uint64_t,int> aiofinished_hash;
+            QHash <uint64_t,int>::iterator iter;
+            ssize_t per_read = (*maxRSize / *maxRAionum);
+
+            aio_context_t laio;
+
+            struct io_event evs[FASTCOPY_LINUX_MAXLIMITAIONUM];
+            struct iocb *pcbpt[FASTCOPY_LINUX_MAXLIMITAIONUM];
+            struct iocb read_aiolist[FASTCOPY_LINUX_MAXLIMITAIONUM];
+            char aioerr_str[512];
+            int aio_ret = 0;
+
+            memset(&read_aiolist,0,(sizeof(struct iocb) * (*maxRAionum)));
+            memset(&laio, 0, sizeof(laio));
+
             off_t current = lseek(hFile,0,SEEK_CUR);
-            //qDebug() << "offset=" << current;
-            for(DWORD i=0; i < aio_pnum;i++){
-                readlist[i].aio_fildes = hFile;
-                readlist[i].aio_lio_opcode = LIO_READ;
+
+            if(io_setup(*maxRAionum,&laio) == SYSCALL_ERR){
+                sprintf(aioerr_str,"ReadFileWithReduce:io_setup:ret=%d)",errno);
+                ConfirmErr(aioerr_str,(char*)src);
+                isaioerror = true;
+                break;
+            }
+
+            for(DWORD i=0; i < *maxRAionum;i++){
+                read_aiolist[i].aio_fildes = hFile;
+                read_aiolist[i].aio_lio_opcode = IOCB_CMD_PREAD;
                 //ex:1MBで同時要求数4だったら0,256KB,512KB,768KBにオフセット設定ね
-                readlist[i].aio_buf = (BYTE *)buf + ((trans / aio_pnum) * i);
+                read_aiolist[i].aio_buf = (uint64_t)((BYTE *)buf + (per_read * i));
                 //ex:1MBで同時要求数4だったら256KBずつ
-                readlist[i].aio_nbytes = trans / aio_pnum;
+                read_aiolist[i].aio_nbytes = per_read;
                 //ex:1MBで同時要求数4だったらファイル読み込み開始位置はcurrentオフセットから0,256KB,512KB,768KBの位置
-                readlist[i].aio_offset = current + ((trans / aio_pnum) * i);
-                struct aiocb *ap = &readlist[i];
-                list[i] = ap;
+                read_aiolist[i].aio_offset = current + (per_read * i);
+                read_aiolist[i].aio_data = hFile;
+                aiofinished_hash.insert((uint64_t)&read_aiolist[i],i);
+                pcbpt[i] = &read_aiolist[i];
             }
-            //まとめてread発行
-            if(::lio_listio(LIO_WAIT,list,aio_pnum,NULL) == SYSCALL_ERR){
-                ConfirmErr("ReadFileWithReduce:lio_listio()",NULL);
+
+            if(io_submit(laio,*maxRAionum,pcbpt) == SYSCALL_ERR){
+                sprintf(aioerr_str,"ReadFileWithReduce:io_submit:ret=%d)",errno);
+                ConfirmErr(aioerr_str,(char*)src);
+                isaioerror = true;
+                continue;
             }
-            //結果をまとめて回収
-            for(DWORD i=0; i < aio_pnum;i++){
-                ssize_t wk_trans = ::aio_return(list[i]);
-                //qDebug() << "wk_trans=" << wk_trans;
-                if(wk_trans == SYSCALL_ERR){
-                    char buf[512];
-                    sprintf(buf,"%s %d %lu","ReadFileWithReduce:aio_return()",errno,i);
-                    ConfirmErr(buf,NULL);
-                    return FALSE;
+
+            while(true){
+                aio_ret = io_getevents(laio,1,*maxRAionum,evs,NULL);
+                if(aio_ret == SYSCALL_ERR){
+                    sprintf(aioerr_str,"ReadFileWithReduce:io_getevents:ret=%d)",errno);
+                    ConfirmErr(aioerr_str,(char*)src);
+                    isaioerror = true;
+                    for(iter = aiofinished_hash.begin(); iter != aiofinished_hash.end(); iter++){
+                        if(io_cancel(laio,&read_aiolist[iter.value()],&evs[iter.value()]) == SYSCALL_ERR){
+                            sprintf(aioerr_str,"ReadFileWithReduce:io_cancel:ret=%d:no=%d)",errno,iter.value());
+                            ConfirmErr(aioerr_str,(char*)src);
+                        }
+                    }
+                    break;
                 }
-                transed = transed + wk_trans;
+                for(int i=0;i<aio_ret;i++){
+                    /*
+                    if(evs[i].res != per_read
+                       || aiofinished_hash.remove(evs[i].obj) == 0){
+                        sprintf(aioerr_str,"ReadFileWithReduce:io_getevents:InternalError! key=%llu read=%llu)",
+                                evs[i].obj,
+                                evs[i].res);
+                        ConfirmErr(aioerr_str,(char*)src);
+                        isaioerror = true;
+                        break;
+                    }
+                    */
+                    transed = transed + evs[i].res;
+                    //qDebug() << "read:" << i << ":" << evs[i].res;
+                    if(aiofinished_hash.remove(evs[i].obj) == 0){
+                        sprintf(aioerr_str,"ReadFileWithReduce:io_getevents:InternalError! key=%llu read=%llu)",
+                                evs[i].obj,
+                                evs[i].res);
+                        ConfirmErr(aioerr_str,(char*)src);
+                        isaioerror = true;
+                        break;
+                    }
+                }
+                if(aiofinished_hash.size() == 0){
+                    break;
+                }
+            } //while(true)
+            if(isaioerror){
+                //retry with read()
+                continue;
             }
-            //fdオフセット進めて次の開始位置を設定
+            if(transed != trans){
+                //qDebug() << "here";
+            }
             lseek(hFile,transed,SEEK_CUR);
         }
         else{
-        */
-        transed = read(hFile,(BYTE *)buf + total,trans);
-        //}
+            transed = read(hFile,(BYTE *)buf + total,trans);
+            //qDebug() << "read:" << transed;
+        }
 
         if(info.flags_second & STAT_MODE){
             QTime time = QTime::currentTime();
-            QString time_str = time.toString("hh:mm:ss.zzz");
+            QString time_str = time.toString("hh:mm:ss.iozzz");
             QString out(time_str + "re:" + QString::number(et.elapsed()) + "rq:" + QString::number(transed));
             PutStat(out.toLocal8Bit().data());
         }
-        if(transed == SYSCALL_ERR){
-            if(errno || min(size, maxReadSize) <= REDUCE_SIZE){
-                return FALSE;
+        //要求サイズを一発で読みこめなかった
+        /*
+        if(transed < trans){
+
+            //seek位置リセット
+            off_t minus = 0 - transed;
+            lseek(hFile,minus,SEEK_CUR);
+
+            if(info.maxAionum > FASTCOPY_LINUX_MINAIONUM && size == maxReadSize){
+                //非同期I/Oやめる
+                maxReadSize = maxReadSize / info.maxAionum;
             }
-            maxReadSize -= REDUCE_SIZE;
-            maxReadSize = ALIGN_SIZE(maxReadSize,REDUCE_SIZE);
+            else{
+                //でかすぎるので1MiBずつ減
+                maxReadSize -= REDUCE_SIZE;
+                maxReadSize = ALIGN_SIZE(maxReadSize,REDUCE_SIZE);
+            }
             continue;
         }
+        else if(transed == SYSCALL_ERR){
+            return FALSE;
+        }
+        */
+        if(transed == SYSCALL_ERR){
+            qDebug() << errno;
+            return FALSE;
+        }
         total += transed;
-        if (transed != trans) {
+        if(transed != trans){
             break;
         }
     }
     *reads = total;
 
-    if (maxReadSize != maxReadSizeSv) {
-        WCHAR buf[128];
-        sprintfV(buf, FMT_REDUCEMSG_V, 'R', maxReadSizeSv / 1024/1024, maxReadSize / 1024/1024);
-        WriteErrLog(buf);
+    if (*maxRSize != maxRSizeSv) {
+        sprintfV(msgbuf, FMT_REDUCEMSG_V,
+                         req_digest ? "RD" : "R",
+                         maxRSizeSv / 1024/1024, *maxRSize / 1024/1024);
+        WriteErrLog(msgbuf);
+    }
+    if (*maxRAionum != maxRAionumSv){
+        sprintfV(msgbuf, FMT_REDUCEAIOMSG,
+                 req_digest ? "RD" : "R",
+                 maxRAionumSv, *maxRAionum);
+        WriteErrLog(msgbuf);
     }
     return	TRUE;
 }
@@ -3489,13 +3655,15 @@ BOOL FastCopy::ReadFileProc(int start_idx, int *end_idx, int dir_len)
                     prepare_ret = FALSE;
                     break;
                 }
+                //qDebug() << "maxReadSize:" << maxReadSize;
+                //qDebug() << "req_buf.bufSize" << req_buf.bufSize;
                 //xattrデータ読み込み要求じゃない？
                 if(stat->dwFileAttributes != 0){
                     ret = ReadFileWithReduce(stat->hFile,
                                              req_buf.buf,
                                              req_buf.bufSize,
                                              &trans_size,
-                                             NULL);
+                                             false);
                 }
                 //xattrデータ読み込み要求
                 else{
@@ -3535,7 +3703,7 @@ BOOL FastCopy::ReadFileProc(int start_idx, int *end_idx, int dir_len)
                     stat->SetFileSize(0);
                     req_buf.bufSize = 0;
                     if((info.flags & CREATE_OPENERR_FILE) || is_send_request){
-                        SendRequest(is_send_request ? WRITE_ABORT : command, &req_buf,
+                        SendRequest(is_send_request ? WRITE_ABORT : command, NULL,
                                     is_send_request && !is_digest ? 0 : stat);
                         is_send_request = TRUE;
                     }
@@ -3628,7 +3796,7 @@ BOOL FastCopy::CheckDstRequest(void)
         break;
 
     case DSTREQ_DIGEST:
-        dstRequestResult = MakeDigest(confirmDst, &dstDigestBuf, &dstDigest, dstDigestVal);
+        dstRequestResult = MakeDigest(confirmDst, &dstDigestBuf, &dstDigest, dstDigestVal,NULL,NULL,false);
         break;
     }
 
@@ -4303,11 +4471,7 @@ BOOL FastCopy::RenameRandomFname(void *org_path, void *rename_path, int dir_len,
 
 BOOL FastCopy::WriteRandomData(void *path, FileStat *stat, BOOL skip_hardlink)
 {
-    BOOL	is_nonbuf = (stat->FileSize() >= PAGE_SIZE
-                         || (stat->FileSize() % dstSectorSize) == 0)
-                            && (info.flags & USE_OSCACHE_WRITE) == 0 ? TRUE : FALSE;
-
-    DWORD	flg = (is_nonbuf ? F_NOCACHE : 0);
+    BOOL	is_nonbuf = info.flags & USE_OSCACHE_WRITE ? false : true;
 
     DWORD	trans_size;
     BOOL	ret = TRUE;
@@ -4316,6 +4480,9 @@ BOOL FastCopy::WriteRandomData(void *path, FileStat *stat, BOOL skip_hardlink)
     if (hFile == SYSCALL_ERR) {
         return	ConfirmErr("Write by Random Data(open)", MakeAddr(path, dstPrefixLen),CEF_NORMAL), FALSE;
     }
+
+    SetOptFlags(hFile,is_nonbuf ? true:false,
+                false,(char*)path,dstFsType);
 
     if (waitTick) Wait((waitTick + 9) / 10);
 
@@ -4338,7 +4505,7 @@ BOOL FastCopy::WriteRandomData(void *path, FileStat *stat, BOOL skip_hardlink)
                                 max_trans : (int)ALIGN_SIZE(remain_size, dstSectorSize);
 
                 if (!(ret = WriteFileWithReduce(hFile, data->buf[i], io_size,
-                        &trans_size, NULL))) {
+                        &trans_size))) {
                     break;
                 }
                 total.writeTrans += trans_size;
@@ -5000,7 +5167,8 @@ BOOL FastCopy::WDigestThreadCore(void)
                 if(memcmp(calc->digest, digest, dstDigest.GetDigestSize()) == 0){
                     // compare OK
                 }
-                else{
+                else {
+                    char wk_path[2048];
                     QString str;
                     QByteArray srcdigest((char*)calc->digest,dstDigest.GetDigestSize());
                     QByteArray dstdigest((char*)digest,dstDigest.GetDigestSize());
@@ -5009,26 +5177,27 @@ BOOL FastCopy::WDigestThreadCore(void)
                     str.append((char*)GetLoadStrV(IDS_VERIFY_ERROR_WARN_2));
                     str.append(dstdigest.toHex());
                     str.append((char*)GetLoadStrV(IDS_VERIFY_ERROR_WARN_3));
-                    ConfirmErr(str.toLocal8Bit().data(), MakeAddr(calc->path, dstPrefixLen),CEF_NOAPI);
-                    //debug このまま使うとバッファオーバフローになるぞ。buf[512]を増やして確認しろよ！
-                    //strcat (buf," compare NG ");
-                    //strcat (buf,(char*)calc->path);
-                    //qDebug("%s",buf);
-                    //debug
-                    //ベリファイエラー検出した場合、dstのファイルを強制削除する。
-                    //再度のコピーでスキップされないようにすることで事故防止。
                     switch(info.mode){
-                        case DIFFCP_MODE:
-                        case SYNCCP_MODE:
-                        case MOVE_MODE:
-                            unlink((char*)calc->path);		//エラーは無視
-                            break;
-                            //その他のモードの場合は削除しない。そもそもこないけど。。
-                        case VERIFY_MODE:
-                        case DELETE_MODE:
-                        case MUTUAL_MODE:
-                        default:
-                            break;
+                    case DIFFCP_MODE:
+                    case SYNCCP_MODE:
+                        if(info.flags_second & VERIFYERR_DELETE){
+                            unlink((char*)calc->path);
+                            ConfirmErr(str.toLocal8Bit().data(), MakeAddr((char*)calc->path, dstPrefixLen),CEF_NOAPI);
+                        }
+                        else{
+                            strncpy(wk_path,(char*)calc->path,sizeof(wk_path));
+                            strcat(wk_path,".rc_verify_err");
+                            rename((char*)calc->path,wk_path);
+                            ConfirmErr(str.toLocal8Bit().data(), MakeAddr(wk_path, dstPrefixLen),CEF_NOAPI);
+                        }
+                        break;
+                        //その他のモードの場合は削除しない。そもそもこないけど。。
+                    case MOVE_MODE:
+                    case VERIFY_MODE:
+                    case DELETE_MODE:
+                    case MUTUAL_MODE:
+                    default:
+                        break;
                     }
                     calc->status = DigestCalc::ERR;
                 }
@@ -5139,8 +5308,8 @@ BOOL FastCopy::PutDigestCalc(DigestCalc *obj, DigestCalc::Status status)
 BOOL FastCopy::MakeDigestAsync(DigestObj *obj)
 {
 
-    int			mode = ((info.flags & USE_OSCACHE_READVERIFY) ? 0 : F_NOCACHE);
-    int			flg = O_RDWR;
+    bool		is_nonbuf = (info.flags & USE_OSCACHE_READVERIFY) ? false : true;
+    int			flg = O_RDONLY;
     int			hFile = SYSCALL_ERR;
 
     _int64		remain_size = 0;
@@ -5157,12 +5326,16 @@ BOOL FastCopy::MakeDigestAsync(DigestObj *obj)
     //ファイル実体同士での比較をしていたが、SANDBOX時はリンク先ファイルopenがブロックされるので、open諦める
     if(obj->fileSize){
         struct stat	bhi;
-        if((hFile = CreateFileWithRetry(obj->path, mode, 0, 0, 0, flg,
-                        0, 5)) == SYSCALL_ERR){
+        if((hFile = open((char*)obj->path,flg,0777)) == SYSCALL_ERR){
             ConfirmErr("MakeDigestAsync:open", MakeAddr(obj->path, dstPrefixLen));
             ret = FALSE;
         }
-        posix_fadvise(hFile,0,0,POSIX_FADV_DONTNEED);
+        else{
+            SetOptFlags(hFile,is_nonbuf ? true : false,
+                        true,
+                        (char*)obj->path,
+                        dstFsType);
+        }
         if(ret && (fstat(hFile,&bhi) == 0)){
             remain_size = bhi.st_size;
         }
@@ -5193,7 +5366,7 @@ BOOL FastCopy::MakeDigestAsync(DigestObj *obj)
         if(calc){
             DWORD	trans_size = 0;
             if (isAbort || io_size && (!ReadFileWithReduce(hFile, calc->data, io_size,
-                                        &trans_size, NULL) || trans_size <= 0)) {
+                                        &trans_size,true) || trans_size <= 0)) {
                 ConfirmErr("MakeDigestAsync:ReadFileWithReduce", MakeAddr(obj->path, dstPrefixLen));
                 ret = FALSE;
                 break;
@@ -5260,32 +5433,11 @@ BOOL FastCopy::CheckDigests(CheckDigestMode mode)
     return	ret && !isAbort;
 }
 
-int FastCopy::CreateFileWithRetry(void *path, DWORD mode, DWORD share,
-    int sa, DWORD cr_mode, DWORD flg, void* hTempl, int retry_max)
-{
-
-    int	fh = 0;
-
-
-    fh = open((const char*)path,flg,0777);
-    //エラー処理は上位任せ
-    if(mode == F_NOCACHE){
-        //読み込んだデータのキャッシュ破棄指示
-        posix_fadvise(fh,0,0,POSIX_FADV_DONTNEED);
-    }
-
-    return	fh;
-}
-
-BOOL FastCopy::WriteFileWithReduce(int hFile, void *buf, DWORD size, DWORD *written,void* overwrap)
+BOOL FastCopy::WriteFileWithReduce(int hFile, void *buf, DWORD size, DWORD *written)
 {
     DWORD	trans = 0;
     DWORD	total = 0;
-    DWORD	maxWriteSizeSv = maxWriteSize;
-
-    struct aiocb writelist[4];
-    int			 aio_pnum = sizeof(writelist) / sizeof(struct aiocb);
-    struct aiocb *list[aio_pnum];		//aio実験用
+    bool	isaioerror = false;
 
     while ((trans = size - total) > 0) {
         DWORD	transed = 0;
@@ -5295,49 +5447,91 @@ BOOL FastCopy::WriteFileWithReduce(int hFile, void *buf, DWORD size, DWORD *writ
         if(info.flags_second & STAT_MODE){
             et.start();
         }
-        //aio有効かつ要求バイトが同時io実行数以上？
-        /*
-        if(info.flags_second & FastCopy::ASYNCIO_MODE && (trans % aio_pnum) == 0){
-            memset(&writelist,0,(sizeof(struct aiocb) * aio_pnum));
-            //fdのカレントオフセット取得
+        if(info.maxAionum > FASTCOPY_LINUX_MINAIONUM && trans == maxWriteSize && !isaioerror){
+            QHash <uint64_t,int> aiofinished_hash;
+            QHash <uint64_t,int>::iterator iter;
+            ssize_t per_write = (maxWriteSize / info.maxAionum);
+
+            aio_context_t laio;
+
+            struct io_event evs[FASTCOPY_LINUX_MAXLIMITAIONUM];
+            struct iocb *pcbpt[FASTCOPY_LINUX_MAXLIMITAIONUM];
+            struct iocb write_aiolist[FASTCOPY_LINUX_MAXLIMITAIONUM];
+            char aioerr_str[512];
+            int aio_ret = 0;
+
+            memset(&write_aiolist,0,(sizeof(struct iocb) * info.maxAionum));
+            memset(&laio, 0, sizeof(laio));
+
             off_t current = lseek(hFile,0,SEEK_CUR);
-            //qDebug() << "offset=" << current;
-            for(int i=0; i < aio_pnum;i++){
-                writelist[i].aio_fildes = hFile;
-                writelist[i].aio_lio_opcode = LIO_WRITE;
+
+            if(io_setup(info.maxAionum,&laio) == SYSCALL_ERR){
+                sprintf(aioerr_str,"WriteFileWithReduce:io_setup:ret=%d)",errno);
+                ConfirmErr(aioerr_str,(char*)dst);
+                isaioerror = true;
+                break;
+            }
+
+            for(DWORD i=0; i < info.maxAionum;i++){
+                write_aiolist[i].aio_fildes = hFile;
+                write_aiolist[i].aio_lio_opcode = IOCB_CMD_PWRITE;
                 //ex:1MBで同時要求数4だったら0,256KB,512KB,768KBにオフセット設定ね
-                writelist[i].aio_buf = (BYTE *)buf + ((trans / aio_pnum) * i);
+                write_aiolist[i].aio_buf = (uint64_t)((BYTE *)buf + (per_write * i));
                 //ex:1MBで同時要求数4だったら256KBずつ
-                writelist[i].aio_nbytes = trans / aio_pnum;
+                write_aiolist[i].aio_nbytes = per_write;
                 //ex:1MBで同時要求数4だったらファイル読み込み開始位置はcurrentオフセットから0,256KB,512KB,768KBの位置
-                writelist[i].aio_offset = current + ((trans / aio_pnum) * i);
-                struct aiocb *ap = &writelist[i];
-                list[i] = ap;
+                write_aiolist[i].aio_offset = current + (per_write * i);
+                write_aiolist[i].aio_data = hFile;
+                aiofinished_hash.insert((uint64_t)&write_aiolist[i],i);
+                pcbpt[i] = &write_aiolist[i];
             }
-            //まとめてread発行
-            if(::lio_listio(LIO_WAIT,list,aio_pnum,NULL) == SYSCALL_ERR){
-                ConfirmErr("WriteFileWithReduce:lio_listio()",NULL);
+
+            if(io_submit(laio,info.maxAionum,pcbpt) == SYSCALL_ERR){
+                sprintf(aioerr_str,"WriteFileWithReduce:io_submit:ret=%d)",errno);
+                ConfirmErr(aioerr_str,(char*)dst);
+                isaioerror = true;
+                continue;
             }
-            //結果をまとめて回収
-            for(int i=0; i < aio_pnum;i++){
-                ssize_t wk_trans = ::aio_return(list[i]);
-                //qDebug() << "wk_trans=" << wk_trans;
-                if(wk_trans == SYSCALL_ERR){
-                    char buf[512];
-                    sprintf(buf,"%s %d %d","WriteFileWithReduce:aio_return():",errno,i);
-                    ConfirmErr(buf,NULL);
-                    return FALSE;
+
+            while(true){
+                aio_ret = io_getevents(laio,1,info.maxAionum,evs,NULL);
+                if(aio_ret == SYSCALL_ERR){
+                    sprintf(aioerr_str,"WriteFileWithReduce:io_getevents:ret=%d)",errno);
+                    ConfirmErr(aioerr_str,(char*)dst);
+                    isaioerror = true;
+                    for(iter = aiofinished_hash.begin(); iter != aiofinished_hash.end(); iter++){
+                        if(io_cancel(laio,&write_aiolist[iter.value()],&evs[iter.value()]) == SYSCALL_ERR){
+                            sprintf(aioerr_str,"WriteFileWithReduce:io_cancel:ret=%d:no=%d)",errno,iter.value());
+                            ConfirmErr(aioerr_str,(char*)dst);
+                        }
+                    }
+                    break;
                 }
-                transed = transed + wk_trans;
-                //qDebug() << "transed=" << transed;
+                for(int i=0;i<aio_ret;i++){
+                    if(evs[i].res != per_write
+                        || aiofinished_hash.remove(evs[i].obj) == 0){
+                        sprintf(aioerr_str,"WriteFileWithReduce:io_getevents:InternalError! key=%llu,write=%llu)",
+                                evs[i].obj,
+                                evs[i].res);
+                        ConfirmErr(aioerr_str,(char*)dst);
+                        isaioerror = true;
+                        break;
+                    }
+                }
+                if(aiofinished_hash.size() == 0){
+                    break;
+                }
             }
-            //fdオフセット進めて次の開始位置を設定
+            if(isaioerror){
+                continue;
+            }
+            transed = transed + trans;
             lseek(hFile,transed,SEEK_CUR);
         }
         else{
-        */
-        transed = write(hFile,(BYTE *)buf + total,trans);
-        //}
+            transed = write(hFile,(BYTE *)buf + total,trans);
+            //qDebug() << "write:" << transed;
+        }
         if(info.flags_second & STAT_MODE){
             QTime time = QTime::currentTime();
             QString time_str = time.toString("hh:mm:ss.zzz");
@@ -5349,7 +5543,6 @@ BOOL FastCopy::WriteFileWithReduce(int hFile, void *buf, DWORD size, DWORD *writ
             //書き込み続行かどうかは上位で判断する
             return FALSE;
         }
-        // writeシステムコールにかえたよんここまで
         total += transed;
     }
     *written = total;
@@ -5438,15 +5631,9 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
     BOOL	is_reparse = IsReparse(stat->dwFileAttributes) && (info.flags & FILE_REPARSE) == 0;
     BOOL	is_hardlink = command == CREATE_HARDLINK;
 
-    // is_nonbuf = true = fastcopyで確保した自バッファをコピーに使う
-    // is_nonbuf = false = OSキャッシュを利用する
-    BOOL	is_nonbuf = //dstFsType != FSTYPE_SMB &&
-                        //指定ファイルサイズ未満の場合はOSキャッシュ利用して書き込みを廃止
-                        //(file_size >= nbMinSize || (file_size % dstSectorSize) == 0)
-                        ((file_size % dstSectorSize) == 0)
-                        && (info.flags & USE_OSCACHE_WRITE) == 0 && !is_reparse ? TRUE : FALSE;
-    //fh2によるreopen不要のためコメントアウト。
-    //BOOL	is_reopen = is_nonbuf && (file_size % dstSectorSize) && !is_reparse ? TRUE : FALSE;
+    // is_nonbuf = true = OSキャッシュを利用する
+    // is_nonbuf = false = fastcopyで確保した自バッファをコピーに使う(O_DIRECT)
+    BOOL	is_nonbuf = !(info.flags & USE_OSCACHE_WRITE) && (!is_reparse ? true : false);
     BOOL	is_stream = command == WRITE_BACKUP_ALTSTREAM;
     int		&totalFiles = is_hardlink ? total.linkFiles : is_stream ?
                             total.writeAclStream : total.writeFiles;
@@ -5489,7 +5676,6 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
             goto END2;
         }
         rc = link((char*)hardLinkDst,(char*)dst);
-        qDebug() << "src=" << (char*)hardLinkDst << "dst=" << (char*)dst;
         if(rc == SYSCALL_ERR){
             ConfirmErr("link()", MakeAddr(dst, dstPrefixLen));
             ret = false;
@@ -5555,7 +5741,7 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
                     strcpy((char*)dst,dst_wk.toLocal8Bit().data());
                 }
             }
-            fh = open((const char*)dst,O_CREAT | O_WRONLY | O_TRUNC,0777);
+            fh = open((const char*)dst,O_CREAT | O_WRONLY,0777);
             if (fh == SYSCALL_ERR) {
                 SetErrFileID(stat->fileID);
                 totalErrFiles++;
@@ -5568,10 +5754,15 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
                 ret = FALSE;
                 goto END;
             }
+            SetOptFlags(fh,
+                        is_nonbuf ? true:false,
+                        false,(char*)dst,dstFsType);
+
             //open成功してたらpreallocateで断片化阻止
             if(info.flags_second & FastCopy::ENABLE_PREALLOCATE){
 #ifdef _CENTOS7                 
                 //posix_fallocate(fh,0,file_size);    //エラー発生時の処理はのちのWriteFileWithReduceに任せる 0fill write嫌なので無発行
+                fallocate(fh,0,0,file_size);
 #else
                 fallocate(fh,FALLOC_FL_ZERO_RANGE,0,file_size);
 #endif
@@ -5582,10 +5773,18 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
                                 //(DWORD)(is_nonbuf ? ALIGN_SIZE(remain, dstSectorSize) : remain);
                                 (DWORD)((is_nonbuf && stat->dwFileAttributes) ? ALIGN_SIZE(remain, dstSectorSize) : remain);
                                 //xattr付与の場合は書き込み長のアライン不要
+
+            //qDebug() << "remain:" << remain << "write_size:" << write_size;
+
+            if(write_size != writeReq->bufSize){
+                //qDebug() << "write_size:" << write_size;
+                //fcntl(fh, F_SETFL, O_DIRECT);
+            }
+
             //xattrデータ書き込みじゃない？
             if(stat->dwFileAttributes != 0){
                 //通常ファイル書き込み
-                ret = WriteFileWithReduce(fh, writeReq->buf, write_size, &trans_size, NULL);
+                ret = WriteFileWithReduce(fh, writeReq->buf, write_size, &trans_size);
             }
             //xattrデータ書き込み要求
             else{
@@ -5679,7 +5878,7 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
             //ftruncateによりファイル日付等のメタデータ情報が非同期に更新される。
             //のちのfutimesまたはlutimesと日付更新操作が前後しないように、一度フラッシュする。
             if(fsync(fh) == SYSCALL_ERR){
-                ERRNO_OUT(errno,"WriteFileProc:fsync");
+                ConfirmErr("WriteFileProc:fsync()",MakeAddr(dst, dstPrefixLen));
             }
         }
     }
@@ -5687,6 +5886,7 @@ BOOL FastCopy::WriteFileProc(int dst_len,int parent_fh)
 END2:
 
     CheckSuspend();
+
     if (ret && is_digest && !isAbort) {
         int path_size = (dst_len + 1) * CHAR_LEN_V;
         DataList::Head	*head = digestList.Alloc(NULL, 0, sizeof(DigestObj) + path_size);
