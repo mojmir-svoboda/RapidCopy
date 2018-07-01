@@ -128,7 +128,7 @@ Windows系最速(?)のファイルコピー＆削除ツールのGNU/Linux移植�
 <div class="help_section">
 	<strong>Windows系最速(?)</strong> のファイルコピー＆削除ツールのLinux移植版です。
 	<br><br>
-	Mac移植版であるRapidCopyPro v1.1.0をベースとしています。<br>
+        Mac移植版であるRapidCopyProをベースとしています。<br>
 	<a name="disk_mode"/>
 	自動的に、コピー元とコピー先が、同一の物理HDD or 別HDD かを判定した後、以下の動作を行います。
 	<table class="help_table" border="4">
@@ -137,7 +137,7 @@ Windows系最速(?)のファイルコピー＆削除ツールのGNU/Linux移植�
 		読み込み後、コピー先に連続して書き込む</td></tr>
 	</table>
 	<br>
-	Read/Write も、OS のキャッシュを使わないように努力しているため、他のプロセス	（アプリケーション）が重くなりにくくなっています。<br>
+        Read/Write も、OS のキャッシュを使わないようにしているため、他のプロセス	（アプリケーション）が重くなりにくくなっています。<br>
 	Include/Exclude フィルタ（UNIXワイルドカード形式）が指定可能です。
 	<br><br>
 	Win32APIの置き換えに可能な限りシステムコールを使用している他、GUIに<a href="http://www.qt.io/Qt">Qtフレームワーク</a>を使用しています。<br>
@@ -156,7 +156,7 @@ Windows系最速(?)のファイルコピー＆削除ツールのGNU/Linux移植�
 <div class="help_section">
 	<div class="help_license">
 	<strong>Copyright 2004-2012, SHIROUZU Hiroaki All rights reserved.</strong><br>
-	<strong>Copyright 2014-2016, Kengo Sawatsu All rights reserved.</strong><br>
+        <strong>Copyright 2014-2018, Kengo Sawatsu All rights reserved.</strong><br>
 	<br>
 	<div class="help_license">
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:<br>
@@ -274,6 +274,7 @@ Windows系最速(?)のファイルコピー＆削除ツールのGNU/Linux移植�
 <h2 class="help_head2">4. インストール・アンインストール</h2>
 <div class="help_section">
 	頑張ってコンパイルしてください:)
+
 </div>
 
 <a name="usage"/>
@@ -392,7 +393,7 @@ Windows系最速(?)のファイルコピー＆削除ツールのGNU/Linux移植�
 		<tr><td><strong>復元無効化（上書き後に削除）</strong></td>
 		<td>削除する前に、対象ファイルをリネームした後、ランダムデータで上書きすることで、削除ファイルの復元を実質的に無効化します。なお、EAの上書きは行いません。設定で「NSA 方式」を選択していた場合は、２回ランダムなデータで上書きした後、最後に 0 で上書きします。（復元不可能かどうかの保証はできません）<br>
 		<br>
-		</td></tr>
+                </td></tr>S_IRWXU
 		</table>
 		<br>
 	</div>
@@ -510,10 +511,24 @@ Windows系最速(?)のファイルコピー＆削除ツールのGNU/Linux移植�
 	<h3 class="help_head3">一般設定</h3>
 	<div class="help_sub_section">
 		RapidCopyの一般設定（各種デフォルト値、I/Oパラメータ、ログ記録等）を行います。
-		<h4 class="help_head3">I/O設定->最大I/O単位(MB)</h4>
-		RapidCopyがデータを読み書きする際のRead/Write時のデータ単位を指定します。<br>
-		10G Ethernet等の超高速ネットワーク環境の場合は4-8MBを指定すると高速化する事があります。<br>
-		10G環境下以外ではデフォルト値(1MB)を推奨します。
+                <table class="help_table" border="4">
+                <a name="setting_io"/>
+                <h4 class="help_head4">I/O設定->I/O設定</h4>
+                I/O用の基本パラメータ設定を行います。<br>
+                <tr><td nowrap><strong>I/O単位(MB)</strong></td>
+                <td>1回にOSにリクエストするread/writeのサイズを指定します。<br>
+                <b>「I/O単位 * 非同期I/O発行数」が、OS内で同時に実行される「最大I/Oサイズ」になります。</b><br>
+                10G Ethernet等の高速なネットワーク環境の場合は大きい値を指定すると高速化する事があります。<br>
+                <font color="red">むやみに大きい値を設定するとI/Oエラーが発生しやすくなります。充分検証の上設定してください。</font><br>
+                </td></tr>
+                <tr><td nowrap><strong>非同期I/O発行数</strong></td>
+                <td>read/writeシステムコールの代わりにLinuxAIOカーネルインタフェースを使用して(特にネットワーク越しの)I/O速度を向上させます。<br>
+                なお、この数を1にすると従来通りのread/writeシステムコールを使用します。<br>
+                <font color="red">発行数の多いRapidCopyを複数同時に実行するとカーネルリソース不足でエラーになるので注意してください。</font><br>
+                aio関連カーネルパラメータについてはディストリビューションごとのチューニングガイドを参考にしてください。<br>
+                最大値は16です。16以上の値を設定しても強制的に16として処理します。<br>
+                </td></tr>
+                </table>
 		<h4 class="help_head3">I/O設定->ベリファイ方式</h4>
 		ベリファイ時のハッシュアルゴリズムを選択します。デフォルトはMD5です。<br>
 		CPUリソースを節約したい場合はxxHashを使用することでCPU使用率を下げることができます。<br>
@@ -876,14 +891,23 @@ Windows系最速(?)のファイルコピー＆削除ツールのGNU/Linux移植�
 <a name="history"/>
 <h2 class="help_head2">12. 履歴</h2>
 <div class="help_section">
-
 <table class="help_table" border="4">
 <tr><th>Version</th><th>説明</th></tr>
+<tr><td>1.3.0</td><td>(2018/06/27)<br>
+非同期I/O(Linux AIO)機能サポート<br>
+O_DIRECTフラグサポート(デフォルト有効)<br>
+コピー実行時または終了時、無言クラッシュする問題を修正(したはず)<br>
+read()発行時のO_NOATIME追加、posix_fadvise()追加などread/writeを全般に最適化<br>
+RapidCopy for mac v1.3.0から以下をporting<br>
+パス入力時、末尾フォルダ/ファイル名が確認できるように表示末尾に自動スクロール<br>
+I/Oサイズの設定値が常に無視されており、強制的に1MB(下限値)となる問題を修正<br>
+dst側でwrite()エラーが発生した場合にコピーが無限ループで進行不能になる(キャンセルは可能)<br>
+</td></tr>
 <tr><td>1.2.7</td><td>(2018/03/07)<br>
 ベリファイ有効時、対象ファイル単位でベリファイが動作していた問題を修正<br>
 RapidCopy for mac v1.2.6 から以下の修正をportingした<br>
 コピー進捗表示のデータ単位表示をMBからGiBに変更<br>
-LTFSモード,ODAモード時、禁則文字自動変換の結果に矛盾が発生する場合はコピー前に強制停止する機能を追加<br>
+LTFSモード時、禁則文字自動変換の結果に矛盾が発生する場合はコピー前に強制停止する機能を追加<br>
 LTFSモードの禁則文字自動置換機能実行時、ファイル/フォルダ名置換後の名称が同一になる場合、置換前ファイルの片方が保存されない。<br>
 LTFSモードの禁則文字自動置換機能実行時、差分コピー(上書きなし),差分(サイズ),ベリファイ(サイズ)およびリストアップ機能が置換後のファイルに対して動作しない<br>
 </td></tr>
