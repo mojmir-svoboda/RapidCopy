@@ -11,11 +11,12 @@ static char *version_id_2 =
     Module Name				: Version
     Create					: 2010-06-13(Sun)
     Update					: 2014-04-16(Wed)
-    ported update           : 2016-03-02
+    ported update           : 2019-01-22
     Copyright				: H.Shirouzu,Kengo Sawatsu
     Reference				:
     ======================================================================== */
 #include <string.h>
+#include <stdio.h>
 #include "version.h"
 
 static char version_str[32];
