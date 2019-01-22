@@ -4926,98 +4926,39 @@ bool MainWindow::InitEv(){
 
     // clicked()シグナル関連初期化
     // Src
-    if(QObject::connect(ui->pushButton_Src,SIGNAL(clicked()),
-                        this,SLOT(EvClicked())) == false){
-        ret = false;
-        goto end;
-    }
-
+    QObject::connect(ui->pushButton_Src,SIGNAL(clicked()),this,SLOT(EvClicked()));
     // Dst
-    if(QObject::connect(ui->pushButton_Dst,SIGNAL(clicked()),
-                        this,SLOT(EvClicked())) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(ui->pushButton_Dst,SIGNAL(clicked()),this,SLOT(EvClicked()));
 
     // Execute
-    if(QObject::connect(ui->pushButton_Exe,SIGNAL(clicked()),
-                        this,SLOT(EvClicked())) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(ui->pushButton_Exe,SIGNAL(clicked()),this,SLOT(EvClicked()));
 
     // Listing
-    if(QObject::connect(ui->pushButton_Listing,SIGNAL(clicked()),
-                        this,SLOT(EvClicked())) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(ui->pushButton_Listing,SIGNAL(clicked()),this,SLOT(EvClicked()));
 
     // Cancel
-    if(QObject::connect(ui->pushButton_cancel_exec,SIGNAL(clicked()),
-                        this,SLOT(EvClicked())) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(ui->pushButton_cancel_exec,SIGNAL(clicked()),this,SLOT(EvClicked()));
 
     // Atonce
-    if(QObject::connect(ui->pushButton_Atonce,SIGNAL(clicked()),
-                        this,SLOT(EvClicked())) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(ui->pushButton_Atonce,SIGNAL(clicked()),this,SLOT(EvClicked()));
     // help
-    if(QObject::connect(ui->pushButton_help,SIGNAL(clicked()),
-                        this,SLOT(EvClicked())) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(ui->pushButton_help,SIGNAL(clicked()),this,SLOT(EvClicked()));
     // Top
-    if(QObject::connect(ui->pushButton_Top,SIGNAL(clicked()),
-                        this,SLOT(EvClicked())) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(ui->pushButton_Top,SIGNAL(clicked()),this,SLOT(EvClicked()));
 
     // activated() or triggeredシグナル関連初期化
-
     // srchist
-    if(QObject::connect(srchist_Group,
-                     SIGNAL(triggered(QAction *)),
-                     this,
-                     SLOT(hist_triggered(QAction *))) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(srchist_Group,SIGNAL(triggered(QAction *)),this,SLOT(hist_triggered(QAction *)));
 
     //dsthist
-    if(QObject::connect(dsthist_Group,
-                     SIGNAL(triggered(QAction *)),
-                     this,
-                     SLOT(hist_triggered(QAction *))) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(dsthist_Group,SIGNAL(triggered(QAction *)),this,SLOT(hist_triggered(QAction *)));
 
     //post-process action
-    if(QObject::connect(finact_Group,
-                     //SIGNAL(triggered(QAction*)),
-                     SIGNAL(triggered(QAction *)),
-                     this,
-                     SLOT(actpostprocess_triggered(QAction *))) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(finact_Group,SIGNAL(triggered(QAction *)),this,SLOT(actpostprocess_triggered(QAction *)));
 
     //post-processdlg action
-    if(QObject::connect(finAct_Menu,
-                     //SIGNAL(triggered(QAction*)),
-                     SIGNAL(triggered()),
-                     this,
-                     SLOT(actpostprocessdlg_triggered())) == false){
-        ret = false;
-        goto end;
-    }
+    QObject::connect(finAct_Menu,SIGNAL(triggered()),this,SLOT(actpostprocessdlg_triggered()));
+
 
     //JobList add and Listing
     connect(ui->pushButton_JobExe,SIGNAL(clicked(bool)),
