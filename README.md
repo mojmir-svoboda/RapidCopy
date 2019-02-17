@@ -26,10 +26,10 @@ http://www.lespace.co.jp/file_bl/rapidcopy/manual/linux/index_en.html
 Basically, usage and specification is same as the Mac version.  
 
 #### インストール(install)
-CentOS7.2以降およびUbuntu16.04(LTS)向けには以下のバイナリがあります。
+CentOS7.2以降およびUbuntu16.04,18.04向けには以下のバイナリがあります。
 (ライブラリはすべて同梱されているので、単体で動作します)
 
-The following binaries are available for CentOS 7.2(or later) and Ubuntu 16.04(LTS).
+The following binaries are available for CentOS 7.2(or later) and Ubuntu 16.04 and 18.04.
 (All libraries are included,so Work with standalone)
 
 https://github.com/KengoSawa2/RapidCopy/tree/master/static_bin
@@ -41,15 +41,15 @@ We checked next Linux distribution.
 OS:CentOS7.2(x64)  
 必須ライブラリ(Required Library):libacl,libbsd,libattr  
 
-OS:Ubuntu14.04 LTS(x64) and Ubuntu16.04 LTS(x64)  
+OS:Ubuntu16.04 LTS(x64) and Ubuntu18.04 LTS(x64)  
 必須ライブラリ(Required Library):libattr1-dev,libbsd-dev,libacl1-dev,libgl1-mesa-dev  
 
-いずれの環境でもコンパイルにはQt5.6とQtCreatorが必要です。 
+いずれの環境でもコンパイルにはQt5.6以降とQtCreatorが必要です。 
 環境によってはg++などのインストールが必要かもしれません。  
 QtCreatorを起動して、rapidcopy_main.proを読み込んでください。
 Qtのダウンロードは以下のURLから行えます。
 
-Qt Library(5.6) and QtCreator are necessary to make.
+Qt Library(5.6 or later) and QtCreator are necessary to make.
 You might need to be installed other library, such as g++,depending on your environment.  
 Start up QtCreator and read project file "rapidcopy_main.pro"
 Qt Framework can download here.
